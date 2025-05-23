@@ -1,0 +1,44 @@
+.register-box{
+
+
+
+     
+
+
+     :global(.register-icons){
+        border: 1px solid #dee2e6;
+        width: 38px;
+        height: 38px;
+     }
+
+     :global(.eye-pointer){
+      cursor: pointer;
+      margin-right: 6px;
+     }
+    
+     :global(.error-message){
+      font-size: 13px;
+     }
+    
+     /* :global(.register-btn){
+       margin-top: 70px; 
+      } */
+
+
+
+     :global(.country-option){
+       white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+     }
+
+  :global(.login-text){
+   color:#49494999
+  }
+
+}
+
+
+
+
+

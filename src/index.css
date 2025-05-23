@@ -1,0 +1,192 @@
+a[href]{
+    text-decoration: none;
+}
+
+ul{
+    list-style: none;
+}
+
+span , a{
+    display: inline-block;
+}
+
+a{
+    color: inherit;
+}
+
+
+
+
+.fa-xmark ,.fa-bars{
+    cursor: pointer;
+}
+
+
+/*  navbar style */
+
+.my-nav{
+    background-color: #F8F9FB;
+    color: white;
+    z-index: 3;
+}
+
+nav .nav-header{
+    color: #1F384C;
+}
+
+input[type="search"]:focus{
+outline: 0;
+}
+
+/*  Search icon in navbar */
+
+.fa-magnifying-glass{
+    left: 10px;
+    color: gray;
+}
+
+
+
+.auth-btn{
+    padding: 7px 5px;
+    background-color: #4AA35A;
+    text-align: center;
+    color: white;
+    text-transform: capitalize;
+    border-radius: 20px;
+    
+    transition: all .3s;
+    border: none;
+    font-weight: 700;
+    width: 75%;
+    display: block;
+    margin-inline: auto;
+}
+
+.auth-btn:hover{
+    scale: 1.1;
+}
+
+.auth-p-text{
+    color:#49494999
+}
+
+.auth-error-message{
+    font-size: 13px;
+    color: red;
+}
+
+/*  header Component */
+
+.home-poster{
+    background-color: #009247;
+    border-radius: 10px;
+    color: white;
+
+
+    .header-text span{
+        color: #DFE0E0;
+    }
+}
+
+
+.large-ellipse-left{
+    margin-left: -20px;
+}
+
+.small-circle-one{
+    left: 80%;
+}
+
+.small-circle-two{
+    left: 60%;
+}
+
+.large-circle-three{
+    right: -30px;
+}
+
+
+/*  SideBar style */
+
+.side-bar-container{
+
+border-top-right-radius: 40px;
+
+   .css-dip3t8{
+    background-color: #1F263E;
+    color: white;
+   }
+
+
+   li.ps-menuitem-root a:hover{
+    background-color:#00924D1A;
+   }
+   li.ps-menuitem-root:nth-child(1) a:hover{
+    background-color: transparent;
+   }
+
+
+   img.side-img{
+    width: 90%;
+   }
+
+
+   
+}
+
+
+
+.body-box button{
+    background-color: #009247;
+    color: white;
+    text-transform: capitalize;
+    padding: 5px 8px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+}
+
+
+
+/*  No Data component */
+
+.description-box p{
+    color: #49494999;
+    
+}
+
+
+/*  Add And Update Form Component */
+
+.add-update-box{
+    z-index: 1050;
+    
+    background-color:rgba(0, 0, 0, 0.5);
+
+
+    .content-box{
+        background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+}
+
+
+.loading-box{
+    z-index: 999999999999;
+}
+
+
+
+.fa-caret-down , .fa-caret-up{
+    cursor: pointer;
+}
+
+
+.right-side-not-found{
+    background-image: url("../src/assets/imags/notfoundbg.png");
+    background-position: center;
+    background-size: cover;
+}
