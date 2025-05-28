@@ -1,33 +1,26 @@
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import toast from "react-hot-toast";
-import axios, { isAxiosError } from "axios";
-import logo from "../../../../assets/imags/logo.png"
-import styles from "./ChangePassword.module.css"
+import { isAxiosError } from "axios";
+import logo from "../../../../assets/imags/logo.png";
+import styles from "./ChangePassword.module.css";
+import { AUTHENTICATIONS_URLS } from "../../../../Api/Url";
+import axiosInstance from "../../../../Api/AxiosInstance";
+import { useNavigate } from "react-router-dom";
 
-
-
-// types of form Data 
 type formData = {
-  oldPassword: string,
-  newPassword: string,
-  confirmNewPassword:string,
- 
-  
-}
-
-
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+};
 
 export default function ChangePassword() {
-const [showPassword , setShowPassword] = useState(false)
-const [showConfirmedPassword , setShowConfirmedPassword] = useState(false)
-const [errorMessage , setErrorMessage] = useState<null | string>(null)
-
-
-
-// useForm hook for form validation
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmedPassword, setShowConfirmedPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -35,187 +28,174 @@ const [errorMessage , setErrorMessage] = useState<null | string>(null)
     control,
     watch,
     formState: { errors },
-  } = useForm<formData>({mode:"onChange"})
+  } = useForm<formData>({ mode: "onChange" });
 
+  const newPassword = watch("newPassword");
+  const oldPassword = watch("oldPassword");
 
- async function handleRegisterUser(userInfo:formData){
-const toastId = toast.loading("Waiting....")
+  async function handleRegisterUser(userInfo: formData) {
+    const toastId = toast.loading("Waiting....");
 
-  try {
-    const options = {
-      url:"https://upskilling-egypt.com:3006/api/v1/Users/ChangePassword",
-      method:"PUT",
-      data:userInfo,
-      headers:{
-        Authorization:localStorage.getItem("userToken")
+    try {
+      const { data } = await axiosInstance.put(
+        AUTHENTICATIONS_URLS.CHANGE_PASSWORD,
+        userInfo
+      );
+      if (data.message === "Password has been updated successfully") {
+        toast.success(data.message);
+        setErrorMessage(null);
+        setTimeout(() => navigate("/dashboard"), 2000);
       }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        setErrorMessage(error.response?.data.message);
+        toast.error(error.response?.data.message);
+      } else {
+        setErrorMessage("Error");
+      }
+    } finally {
+      toast.dismiss(toastId);
     }
-
-    const {data} = await axios.request(options)
-    console.log(data)
-    if(data.message === "Password has been updated successfully"){
-      toast.success(data.message)
-            setErrorMessage(null)
-       
-
-    }
-
-
-  } catch (error) {
-    console.log(error)
-if(isAxiosError(error)){
-  setErrorMessage(error.response?.data.message)
-  toast.error(error.response?.data.message)
-}else{
-  setErrorMessage("Error")
-}
-
-  }finally{
-    toast.dismiss(toastId)
-
   }
 
-
-
-
-
-}
-
-
-
-
-
-// check password Event handler
-
-const newPassword = watch("newPassword")
-const oldPassword = watch("oldPassword")
-
-
-
-
-
-
-// JSX Start
   return (
-    <>
-   <div className={` ${styles["register-box"]} d-flex justify-content-center align-items-center`}>
-     <div className={`p-4 mt-4 bg-white rounded-2 shadow-lg overflow-hidden ${styles["register-parent"]}`}>
-     <div className="register-logo d-flex justify-content-center mb-3">
-     <img className="w-75"  src={logo} alt="logo food-recipies" />
-     </div>
+    <section
+      aria-labelledby="change-password-heading"
+      className={`${styles["register-box"]} d-flex justify-content-center align-items-center`}
+    >
+      <div className={`p-4 mt-4 bg-white rounded-2 shadow-lg overflow-hidden ${styles["register-parent"]}`} role="form">
+        <div className="register-logo d-flex justify-content-center mb-3">
+          <img className="w-75" src={logo} alt="Food Recipes Logo" />
+        </div>
 
-        <h2 className=" text-center"> Change Your Password</h2>
+        <h2 id="change-password-heading" className="text-center">Change Your Password</h2>
         <p className="mb-4 text-danger text-center">Please Enter Details Below</p>
-        <form className="" onSubmit={handleSubmit(handleRegisterUser)}>
-       <div className=" form-box">
-           <div className="left-forms  flex-grow-1">
 
- {/*  old password */}
+        <form onSubmit={handleSubmit(handleRegisterUser)} noValidate>
+          <div className="form-box">
+            <div className="left-forms flex-grow-1">
 
-<div className="w-100 position-relative">
-  <div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i  className="fa-solid fa-lock"></i>
-  </div>      
-  <i onClick={()=>{
-  setShowPassword(!showPassword)
-}} className={`fa-solid ${showPassword?"fa-eye":"fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`} title={!showPassword ?"showPassword":"Hide Password"}></i>       
-   <input className="form-control rounded-0" type={!showPassword ?"password":"text"} placeholder=" Old Password"
-   {...register("oldPassword",{required:"Old Password Is Required",pattern:{
-    value:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-    message:`Minimum eight characters, at least one upper case letter, one lower case letter, one number and one special character
+              {/* Old Password */}
+              <div className="mb-3 position-relative">
+                <label htmlFor="oldPassword" className="form-label">Old Password</label>
+                <div className="d-flex gap-1 align-items-center position-relative">
+                  <div className="register-icons d-flex justify-content-center align-items-center">
+                    <i className="fa-solid fa-lock"></i>
+                  </div>
+                  <i
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    role="button"
+                    tabIndex={0}
+                  />
+                  <input
+                    id="oldPassword"
+                    className="form-control rounded-0"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Old Password"
+                    {...register("oldPassword", {
+                      required: "Old Password Is Required",
+                      pattern: {
+                        value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
+                        message: "Must include upper/lowercase, number, and special character",
+                      },
+                    })}
+                    autoComplete="current-password"
+                  />
+                </div>
+                {errors.oldPassword && (
+                  <p className="text-danger error-message" role="alert" aria-live="polite">
+                    {errors.oldPassword.message}
+                  </p>
+                )}
+              </div>
 
-`,
-   }})}
-   autoComplete="new-password"
-   />
+              {/* New Password */}
+              <div className="mb-3 position-relative">
+                <label htmlFor="newPassword" className="form-label">New Password</label>
+                <div className="d-flex gap-1 align-items-center position-relative">
+                  <div className="register-icons d-flex justify-content-center align-items-center">
+                    <i className="fa-solid fa-lock"></i>
+                  </div>
+                  <i
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    role="button"
+                    tabIndex={0}
+                  />
+                  <input
+                    id="newPassword"
+                    className="form-control rounded-0"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="New Password"
+                    {...register("newPassword", {
+                      required: "New Password Is Required",
+                      pattern: {
+                        value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
+                        message: "Must include upper/lowercase, number, and special character",
+                      },
+                      validate: (value) =>
+                        value !== oldPassword || "New Password must differ from Old Password",
+                    })}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.newPassword && (
+                  <p className="text-danger error-message" role="alert" aria-live="polite">
+                    {errors.newPassword.message}
+                  </p>
+                )}
+              </div>
 
+              {/* Confirm Password */}
+              <div className="mb-3 position-relative">
+                <label htmlFor="confirmNewPassword" className="form-label">Confirm New Password</label>
+                <div className="d-flex gap-1 align-items-center position-relative">
+                  <div className="register-icons d-flex justify-content-center align-items-center">
+                    <i className="fa-solid fa-lock"></i>
+                  </div>
+                  <i
+                    onClick={() => setShowConfirmedPassword(!showConfirmedPassword)}
+                    className={`fa-solid ${showConfirmedPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+                    aria-label={showConfirmedPassword ? "Hide password" : "Show password"}
+                    role="button"
+                    tabIndex={0}
+                  />
+                  <input
+                    id="confirmNewPassword"
+                    className="form-control rounded-0"
+                    type={showConfirmedPassword ? "text" : "password"}
+                    placeholder="Confirm New Password"
+                    {...register("confirmNewPassword", {
+                      required: "Confirmed Password Is Required",
+                      validate: (value) =>
+                        value === newPassword || "Passwords Do Not Match",
+                    })}
+                    onPaste={(e) => e.preventDefault()}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.confirmNewPassword && (
+                  <p className="text-danger error-message" role="alert" aria-live="polite">
+                    {errors.confirmNewPassword.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
 
-</div>
+          {errorMessage && (
+            <p className="text-center text-danger" role="alert" aria-live="polite">
+              {errorMessage}
+            </p>
+          )}
 
-</div>
-         {errors.oldPassword && <p className="text-danger error-message "> {errors.oldPassword.message}</p>}
-
-{/*  New Password  */}
-
-<div className="w-100 position-relative">
-  <div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i  className="fa-solid fa-lock"></i>
-  </div>      
-  <i onClick={()=>{
-  setShowPassword(!showPassword)
-}} className={`fa-solid ${showPassword?"fa-eye":"fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`} title={!showPassword ?"showPassword":"Hide Password"}></i>       
-   <input className="form-control rounded-0" type={!showPassword ?"password":"text"} placeholder=" New Password"
-   {...register("newPassword",{required:"New Password Is Required",pattern:{
-    value:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-    message:`Minimum eight characters, at least one upper case letter, one lower case letter, one number and one special character
-
-`,
-   },validate:(value)=> value !== oldPassword || "New Password Must Be different Than Old Password"})}
-   autoComplete="new-password"
-   />
-
-
-</div>
-
-</div>
-
-         {errors.newPassword && <p className="text-danger error-message "> {errors.newPassword.message}</p>}
-
-
-
-
-
-
-
-{/* Confirmed  New password */}
-<div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i className="fa-solid fa-lock"></i>
-  </div>   
-    <i onClick={()=>{
-      setShowConfirmedPassword(!showConfirmedPassword)
-}} className={`fa-solid ${showConfirmedPassword?"fa-eye":"fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`} title={!showConfirmedPassword ?"showPassword":"Hide Password"}></i>       
-          
-   <input className="form-control rounded-0" type={!showConfirmedPassword ?"password":"text"} placeholder="Confirm New Password"
-   {...register("confirmNewPassword",{required:"Confirmed Password Is Required",validate:(value)=> value === newPassword || "Passwords Do Not Match"})}
-   onPaste={(e)=>{e.preventDefault()
-    return false;
-   }}
-   autoComplete="new-password"
-   />
-         {errors.confirmNewPassword && <p className="text-danger error-message position-absolute start-0 top-100">{errors.confirmNewPassword.message}</p>}
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
- </div>
-
-
-
-
-
-
-
-       </div>
-   {errorMessage && <p className="text-center text-danger">{errorMessage}</p>}
-   <button className="auth-btn register-btn" type="submit"> Change Password</button>
+          <button className="auth-btn register-btn" type="submit">Change Password</button>
         </form>
-         <DevTool control={control} />
-    </div>
-   </div>
-    </>
-  )
+        <DevTool control={control} />
+      </div>
+    </section>
+  );
 }

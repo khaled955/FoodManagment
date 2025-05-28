@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider} from 'react-router-dom';
 import AuthLayout from './Modules/Shared/Components/AuthLayout/AuthLayout';
@@ -19,13 +20,24 @@ import ChangePassword from './Modules/Shared/Components/ChangePassword/ChangePas
 import UserAuthContext from './Context/UserAuth.context';
 import GuestRoute from './Modules/Shared/Components/GuestRoute/GuestRoute';
 import AdminActionsProvider from './Context/AdminActions.context';
+import { useState } from 'react';
+import { FoodItem } from './interfaces/interfaces';
+import useOnline from './Hooks/useOnline';
 
 
 function App() {
 
+const [_recipeAction , setRecipeAction] = useState("add")
+const [_currentRecipe , _setCurrentRecipe] = useState<FoodItem | null>(null)
+ const isOnline = useOnline()
 
+function handleSetRecipeAddAction(){
+  setRecipeAction("add")
+}
 
-
+function handleSetRecipeUpdateAction(){
+  setRecipeAction("update")
+}
 
 
  
@@ -45,7 +57,7 @@ const routes = createBrowserRouter([{path:"/" ,element: <GuestRoute><AuthLayout/
 
 {path:"/dashboard",element:  <ProtectedRoute><MasterLayout/> </ProtectedRoute>,children:[
   {index:true , element:<Dashboard/>},
-  {path:"recipes", element:<RecipesList/>},
+  {path:"recipes", element:<RecipesList handleSetRecipeUpdateAction={handleSetRecipeUpdateAction} handleSetRecipeAddAction={handleSetRecipeAddAction}/>},
   {path:"recipe-data" , element:<RecipeData/>},
   {path:"categories" , element:<CategoriesList/>},
   {path:"users" , element:<UsersList/>},
@@ -63,6 +75,7 @@ const routes = createBrowserRouter([{path:"/" ,element: <GuestRoute><AuthLayout/
 
   return (
     <>
+    {!isOnline && <p className='position-fixed top-0 start-50 translate-middle-x text-white fw-bold bg-danger online-alert p-2'> Please Check Internet Connection  <i className="fa-solid fa-wifi"></i></p>}
     <UserAuthContext>
       <AdminActionsProvider>
       <RouterProvider router={routes}></RouterProvider>

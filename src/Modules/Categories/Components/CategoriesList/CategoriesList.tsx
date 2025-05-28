@@ -11,12 +11,13 @@ import NoData from "../../../Shared/Components/NoData/NoData"
 import AddAndUpdateForm from "../../../Shared/Components/AddAndUpdateForm/AddAndUpdateForm"
 import DeletConfirmationModal from "../../../Shared/Components/DeletConfirmationModal/DeletConfirmationModal"
 import CategoryDetailsView from "../CategoryDetailsView/CategoryDetailsView.tsx"
+import { CATEGORIES_URL } from "../../../../Api/Url.tsx"
+import { Helmet } from "react-helmet"
 
 const dashboardHeaderOne = "Categories"
 const dashboardHeaderTwo = "Items"
 const dashBoardText = "You can now add your items that any user can order it from the Application and you can edit"
 
-const URL = "/api/v1/Category/?pageSize=10&pageNumber=1"
 
 
 export default function CategoriesList() {
@@ -43,7 +44,7 @@ useEffect(()=>{
   
 
 
-handleGetDataByAdmin(URL)
+handleGetDataByAdmin(CATEGORIES_URL.GET_ALL_CATEGORIES(10,1))
 
 },[])
 
@@ -113,6 +114,18 @@ function handleHideCategoryDetailsView(){
 
   return (
    <>
+
+ <Helmet>
+      <title>Categories | Food Management</title>
+      <meta name="description" content="Browse all recipe categories available in our food management platform." />
+      <meta name="keywords" content="recipe categories, food management, cooking, meal types" />
+      <meta property="og:title" content="Explore Categories | Food Management" />
+      <meta property="og:description" content="Discover recipe categories to help organize and manage your food items." />
+      <meta property="og:type" content="website" />
+    </Helmet>
+
+
+
    <Header imgePath={dashboardimg} titleOne={dashboardHeaderOne} titleTwo={dashboardHeaderTwo} text ={dashBoardText}/>
    <Body handleAddTitleAndBtnTextForm={handleAddTitleAndBtnTextForm} header="Categories Table Details" description="You can check all details" item="Category" onClick={handleShowUpdateAndUpdateForm} handleUpdateAndAddFormHeader={handleUpdateAndAddFormHeader} />
    
@@ -121,7 +134,7 @@ function handleHideCategoryDetailsView(){
 }
 
 
-{showDeleteConfirmation && <DeletConfirmationModal onClick={handleHideDeletModal} currentId={currentId} handleHideDeletModal={handleHideDeletModal} actionDeletType={actionDeletType}/>}
+{showDeleteConfirmation && <DeletConfirmationModal type="Category" onClick={handleHideDeletModal} currentId={currentId} handleHideDeletModal={handleHideDeletModal} actionDeletType={actionDeletType}/>}
 
 
 
@@ -129,35 +142,92 @@ function handleHideCategoryDetailsView(){
 
    {/*  table to display categories */}
 
-   <div className="table-box">
-    <table className=" table table-responsive text-center">
-      <thead>
-        <tr>
-          <th className="d-flex align-items-center justify-content-center gap-1">Name {isSorted ? <i onClick={()=>{
-            setIsSorted(false)
-            handleSortCategoriesByName()
-
-          }} className="fa-solid fa-caret-up"></i>:<i  onClick={()=>{
-            setIsSorted(true)
-               handleReverseCategoriesByName()
-
-          }} className="fa-solid fa-caret-down"></i>}</th>
-          <th>Creation Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-       { categoryList.length > 0 ? categoryList.map((category:Category)=>  <tr key={category.id}>
-          <td>{category.name} </td>
-          <td>{new Date(category.creationDate).toLocaleDateString()}-{new Date(category.creationDate).toLocaleTimeString()}</td>
-          <td><ActionBtnGroup handleUpdateTitleAndBtnTextForm={handleUpdateTitleAndBtnTextForm} handleUpdateAndAddFormHeader={handleUpdateAndAddFormHeader} catDetails={category} handleSetCurrentId={handleSetCurrentId} handleSetCurrentCategory={handleSetCurrentCategory} 
-          handleShowCategoryDetailsView={handleShowCategoryDetailsView}
-          handleShowDeletModal={handleShowDeletModal}/></td>
-        </tr>):<NoData/>}
-      </tbody>
-    </table>
-   </div>
+  
    
+<section className="table-box" aria-labelledby="category-table-heading">
+  <table className="table table-responsive text-center">
+    <caption id="category-table-heading" className="visually-hidden">
+      Categories table listing names, creation dates, and available actions.
+    </caption>
+    <thead>
+      <tr>
+        <th
+          className="d-flex align-items-center justify-content-center gap-1"
+          scope="col"
+          aria-sort={isSorted ? "ascending" : "descending"}
+        >
+          Name{" "}
+          {isSorted ? (
+            <i
+              onClick={() => {
+                setIsSorted(false);
+                handleSortCategoriesByName();
+              }}
+              className="fa-solid fa-caret-up"
+              role="button"
+              aria-label="Sort descending"
+              tabIndex={0}
+            ></i>
+          ) : (
+            <i
+              onClick={() => {
+                setIsSorted(true);
+                handleReverseCategoriesByName();
+              }}
+              className="fa-solid fa-caret-down"
+              role="button"
+              aria-label="Sort ascending"
+              tabIndex={0}
+            ></i>
+          )}
+        </th>
+        <th scope="col">Creation Date</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {categoryList.length > 0 ? (
+        categoryList.map((category: Category) => (
+          <tr key={category.id}>
+            <td>{category.name}</td>
+            <td>
+              {new Date(category.creationDate).toLocaleDateString()} -{" "}
+              {new Date(category.creationDate).toLocaleTimeString()}
+            </td>
+            <td>
+              <ActionBtnGroup
+                handleUpdateTitleAndBtnTextForm={handleUpdateTitleAndBtnTextForm}
+                handleUpdateAndAddFormHeader={handleUpdateAndAddFormHeader}
+                catDetails={category}
+                handleSetCurrentId={handleSetCurrentId}
+                handleSetCurrentCategory={handleSetCurrentCategory}
+                handleShowCategoryDetailsView={handleShowCategoryDetailsView}
+                handleShowDeletModal={handleShowDeletModal}
+              />
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={3}>
+            <div aria-live="polite">
+              <NoData />
+            </div>
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</section>
+
+
+
    </>
+
+
+
+
+
+
   )
 }

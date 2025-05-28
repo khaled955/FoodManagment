@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import axios, { isAxiosError } from "axios";
 import logo from "../../../../assets/imags/logo.png"
 import { useNavigate } from "react-router-dom";
+import { AUTHENTICATIONS_URLS } from "../../../../Api/Url";
 
 
 
@@ -62,7 +63,7 @@ const toastId = toast.loading("Waiting....")
 
   try {
     const options = {
-      url:"https://upskilling-egypt.com:3006/api/v1/Users/Register",
+      url:AUTHENTICATIONS_URLS.SIGNUP,
       method:"POST",
       data:userInfo,
     }
@@ -332,5 +333,7 @@ handleChangePrefix()
     </div>
    </div>
     </>
+
+
   )
 }

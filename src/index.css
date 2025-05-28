@@ -165,13 +165,21 @@ border-top-right-radius: 40px;
     background-color:rgba(0, 0, 0, 0.5);
 
 
-    .content-box{
+    .content-box  {
         background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 }
+
+
+.recipe-details-box{
+      background-color: white;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  
+}
+
 
 
 .loading-box{
@@ -189,4 +197,54 @@ border-top-right-radius: 40px;
     background-image: url("../src/assets/imags/notfoundbg.png");
     background-position: center;
     background-size: cover;
+}
+
+
+/*  Recipes Style */
+.recipe-img{
+    width: 50px;
+    border-radius: 50%;
+}
+
+.header-recipes{
+    background-color: #F0FFEF;
+}
+
+.recipe-add-p{
+    color:#D9D9D9;
+}
+
+
+input[type="file"]{
+    appearance: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+.label-file{
+    cursor: pointer;
+}
+
+
+.label-box{
+    background-color: #F7F7F7;
+}
+
+
+.recipe-table-name{
+    word-break: break-all;
+}
+
+
+.recipe-details-container{
+    z-index: 99999999999999999;
+background-color:rgba(0, 0, 0, 0.5);
+
+}
+
+
+
+.online-alert{
+    z-index: 9999999999999999999999999999999;
 }

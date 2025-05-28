@@ -1,18 +1,21 @@
 import { Dropdown } from 'react-bootstrap';
 import { BsThreeDotsVertical, BsEye, BsPencil, BsTrash } from 'react-icons/bs';
-import { Category } from '../../../../interfaces/interfaces';
+import { ActionBtnGroupProps} from '../../../../interfaces/interfaces';
+import { useNavigate } from 'react-router-dom';
 
 
 
 
 
-const ActionBtnGroup = ({handleUpdateTitleAndBtnTextForm,catDetails,handleUpdateAndAddFormHeader,handleSetCurrentId,handleSetCurrentCategory,handleShowDeletModal ,handleShowCategoryDetailsView}:{handleUpdateTitleAndBtnTextForm:()=>void,handleUpdateAndAddFormHeader:(headerName:string)=>void,catDetails:Category,handleSetCurrentId:(current:number)=>void,handleSetCurrentCategory:(currentCat:Category)=>void,handleShowDeletModal:()=>void,handleShowCategoryDetailsView:()=>void}) => {
+const ActionBtnGroup = ({handleUpdateTitleAndBtnTextForm,recipeInfo,catDetails,handleUpdateAndAddFormHeader,handleSetCurrentId,handleSetCurrentCategory,handleShowDeletModal ,handleShowCategoryDetailsView,handleSetRecipeUpdateAction,hanldleViewClick}:ActionBtnGroupProps) => {
 
+const navigate = useNavigate()
 
+function handleUpdateRecipeActionAndNavigate(){
+handleSetRecipeUpdateAction!();
+    navigate("/dashboard/recipe-data",{state:{recipeAction:"Update",recipeInfo}})
 
-
-
-
+}
 
 
 
@@ -28,8 +31,16 @@ const ActionBtnGroup = ({handleUpdateTitleAndBtnTextForm,catDetails,handleUpdate
 
       <Dropdown.Menu className="shadow-sm rounded-3">
         <Dropdown.Item onClick={()=>{
-             handleSetCurrentCategory(catDetails)
-             handleShowCategoryDetailsView()
+          if(catDetails) {
+            handleSetCurrentCategory?.(catDetails)
+             handleShowCategoryDetailsView?.()
+          }
+
+         if(recipeInfo){
+          hanldleViewClick!(recipeInfo)
+         }
+
+
         }}>
           <BsEye className="me-2 text-success" />
           View
@@ -37,9 +48,18 @@ const ActionBtnGroup = ({handleUpdateTitleAndBtnTextForm,catDetails,handleUpdate
 
         <Dropdown.Item onClick={()=>{
 
-handleUpdateTitleAndBtnTextForm()
-handleUpdateAndAddFormHeader(catDetails.name)
-handleSetCurrentId(catDetails.id)
+  // recipe module action 
+if(recipeInfo){
+    handleUpdateRecipeActionAndNavigate()
+handleUpdateTitleAndBtnTextForm?.()
+}
+
+// category module action
+if(catDetails){
+  handleUpdateAndAddFormHeader?.(catDetails.name)
+handleSetCurrentId?.(catDetails.id)
+handleUpdateTitleAndBtnTextForm?.()
+}
         }}>
           <BsPencil className="me-2 text-primary" />
           Edit
@@ -47,8 +67,15 @@ handleSetCurrentId(catDetails.id)
 
 
         <Dropdown.Item onClick={()=>{
-          handleSetCurrentId(catDetails.id)
-          handleShowDeletModal()
+          if(catDetails) {
+            handleSetCurrentId!(catDetails.id)
+
+          }
+          if(recipeInfo){
+            handleSetCurrentId!(recipeInfo.id)
+          }
+
+          handleShowDeletModal!()
         }}>
           <BsTrash className="me-2 text-danger" />
           Delete

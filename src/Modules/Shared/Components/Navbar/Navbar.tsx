@@ -45,7 +45,7 @@ function getUserDecoded(){
         <h2 className=' h6'>{getUserDecoded()}</h2>
         <div className="profile-setting">
  <DropdownButton id="dropdown-basic-button" title="Upskilling">
-      <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
+      <Dropdown.Item >Profile</Dropdown.Item>
   
     </DropdownButton>
       </div>

@@ -7,6 +7,7 @@ import axios, { isAxiosError } from "axios";
 import logo from "../../../../assets/imags/logo.png"
 import { useNavigate } from "react-router-dom";
 import styles from "./ResetPassword.module.css"
+import { AUTHENTICATIONS_URLS } from "../../../../Api/Url";
 
 
 
@@ -52,7 +53,7 @@ const toastId = toast.loading("Waiting....")
 
   try {
     const options = {
-      url:"https://upskilling-egypt.com:3006/api/v1/Users/Reset",
+      url:AUTHENTICATIONS_URLS.RESET_PASSWORD,
       method:"POST",
       data:userInfo,
     }
@@ -104,141 +105,174 @@ const password = watch("password")
 
 // JSX Start
   return (
-    <>
-   <div className={` ${styles["register-box"]} col-md-6`}>
-     <div className={`p-4 mt-4 bg-white rounded-2 shadow-lg overflow-hidden ${styles["register-parent"]}`}>
-     <div className="register-logo d-flex justify-content-center mb-3">
-     <img className="w-75" src={logo} alt="logo food-recipies" />
-     </div>
 
-        <h2 className=""> Reset Password</h2>
-        <p className="auth-p-text">Please Enter Your Otp  or Check Your Inbox</p>
-        <form className="" onSubmit={handleSubmit(handleRegisterUser)}>
-       <div className=" d-flex flex-wrap gap-3 form-box">
-           <div className="left-forms d-flex flex-column gap-4 flex-grow-1">
-         
-
-
-
-{/* Email */}
-
-<div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i className="fa-solid fa-envelope"></i> 
-
- </div>             
-   <input className="form-control rounded-0" type="email" placeholder="Email"
-   {...register("email",{required:"Email Is Required",pattern:{
-    value:/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
-    message:"Email Must Be Valid"
-   }})}
-   
-   />
-         {errors.email && <p className="auth-error-message position-absolute start-0 top-100">{errors.email.message}</p>}
-
-</div>
-
-
-{/*  OTP */}
-
-
-      
-<div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-       <i className="fa-solid fa-user fs-4"></i>
-  </div>             
-   <input  className=" form-control rounded-0" type="text" placeholder="Enter Your OTP"
-   {...register("seed",{required:"User Name Is Required",pattern:{
-    value:/^[a-zA-Z0-9]{4}$/,
-    message:"OTP Must Be 4 Charachters"
-   }})}
-   
-   />
-      {errors.seed && <p className="auth-error-message position-absolute start-0 top-100">{errors.seed.message}</p>}
-
-</div>
-
-
-
-
-
-
-
- {/* password */}
-
-<div className="w-100 position-relative">
-  <div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i  className="fa-solid fa-lock"></i>
-  </div>      
-  <i onClick={()=>{
-  setShowPassword(!showPassword)
-}} className={`fa-solid ${showPassword?"fa-eye":"fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`} title={!showPassword ?"showPassword":"Hide Password"}></i>       
-   <input className="form-control rounded-0" type={!showPassword ?"password":"text"} placeholder=" New Password"
-   {...register("password",{required:"Password Is Required",pattern:{
-    value:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-    message:`Minimum eight characters, at least one upper case letter, one lower case letter, one number and one special character
-
-`,
-   }})}
-   autoComplete="new-password"
-   />
-
-
-</div>
-         {errors.password && <p className="auth-error-message "> {errors.password.message}</p>}
-
-</div>
-
-
-
-{/* Confirmed  New password */}
-<div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i className="fa-solid fa-lock"></i>
-  </div>   
-    <i onClick={()=>{
-      setShowConfirmedPassword(!showConfirmedPassword)
-}} className={`fa-solid ${showConfirmedPassword?"fa-eye":"fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`} title={!showConfirmedPassword ?"showPassword":"Hide Password"}></i>       
-          
-   <input className="form-control rounded-0" type={!showConfirmedPassword ?"password":"text"} placeholder="Confirm New Password"
-   {...register("confirmPassword",{required:"Confirmed Password Is Required",validate:(value)=> value === password || "Passwords Do Not Match"})}
-   onPaste={(e)=>{e.preventDefault()
-    return false;
-   }}
-   autoComplete="new-password"
-   />
-         {errors.confirmPassword && <p className="auth-error-message position-absolute start-0 top-100">{errors.confirmPassword.message}</p>}
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
- </div>
-
-
-
-
-
-
-
-       </div>
-   {errorMessage && <p className="text-center text-danger fw-bold">{errorMessage}</p>}
-   <button className="auth-btn mt-4" type="submit"> Reset Password</button>
-        </form>
-         <DevTool control={control} />
+<main className={`${styles["register-box"]} col-md-6`} role="main" aria-labelledby="reset-password-title">
+  <section className={`p-4 mt-4 bg-white rounded-2 shadow-lg overflow-hidden ${styles["register-parent"]}`}>
+    
+    {/* Logo */}
+    <div className="register-logo d-flex justify-content-center mb-3">
+      <img className="w-75" src={logo} alt="Food Recipes logo" />
     </div>
-   </div>
-    </>
+
+    {/* Title */}
+    <h1 id="reset-password-title" className="text-center h4">Reset Password</h1>
+    <p className="auth-p-text text-center">Please enter your OTP or check your inbox.</p>
+
+    {/* Form */}
+    <form onSubmit={handleSubmit(handleRegisterUser)} aria-describedby="reset-password-desc">
+      <p id="reset-password-desc" className="visually-hidden">
+        Form to reset your password. Requires email, OTP, and matching new passwords.
+      </p>
+
+      <fieldset className="form-box border-0">
+        <legend className="visually-hidden">Reset Password Form</legend>
+
+        {/* Email */}
+        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-3">
+          <label htmlFor="email" className="register-icons d-flex justify-content-center align-items-center">
+            <i className="fa-solid fa-envelope" aria-hidden="true"></i>
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="form-control rounded-0"
+            placeholder="Email"
+            aria-required="true"
+            {...register("email", {
+              required: "Email Is Required",
+              pattern: {
+                value: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
+                message: "Email Must Be Valid"
+              }
+            })}
+          />
+          {errors.email && (
+            <p className="auth-error-message position-absolute start-0 top-100" role="alert">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        {/* OTP */}
+        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-3">
+          <label htmlFor="seed" className="register-icons d-flex justify-content-center align-items-center">
+            <i className="fa-solid fa-user fs-4" aria-hidden="true"></i>
+          </label>
+          <input
+            id="seed"
+            className="form-control rounded-0"
+            type="text"
+            placeholder="Enter Your OTP"
+            aria-required="true"
+            {...register("seed", {
+              required: "OTP is required",
+              pattern: {
+                value: /^[a-zA-Z0-9]{4}$/,
+                message: "OTP must be 4 characters"
+              }
+            })}
+          />
+          {errors.seed && (
+            <p className="auth-error-message position-absolute start-0 top-100" role="alert">
+              {errors.seed.message}
+            </p>
+          )}
+        </div>
+
+        {/* New Password */}
+        <div className="w-100 position-relative mb-3">
+          <label htmlFor="password" className="visually-hidden">New Password</label>
+          <div className="d-flex gap-1 align-items-center position-relative w-100">
+            <div className="register-icons d-flex justify-content-center align-items-center">
+              <i className="fa-solid fa-lock" aria-hidden="true"></i>
+            </div>
+            <i
+              onClick={() => setShowPassword(!showPassword)}
+              className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+              title={!showPassword ? "Show Password" : "Hide Password"}
+              role="button"
+              tabIndex={0}
+              aria-label={!showPassword ? "Show password" : "Hide password"}
+            ></i>
+            <input
+              id="password"
+              className="form-control rounded-0"
+              type={showPassword ? "text" : "password"}
+              placeholder="New Password"
+              aria-required="true"
+              autoComplete="new-password"
+              {...register("password", {
+                required: "Password is required",
+                pattern: {
+                  value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
+                  message: "Must contain 8+ chars, uppercase, lowercase, number, and special character"
+                }
+              })}
+            />
+          </div>
+          {errors.password && (
+            <p className="auth-error-message" role="alert">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* Confirm New Password */}
+        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-3">
+          <label htmlFor="confirmPassword" className="visually-hidden">Confirm New Password</label>
+          <div className="register-icons d-flex justify-content-center align-items-center">
+            <i className="fa-solid fa-lock" aria-hidden="true"></i>
+          </div>
+          <i
+            onClick={() => setShowConfirmedPassword(!showConfirmedPassword)}
+            className={`fa-solid ${showConfirmedPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+            title={!showConfirmedPassword ? "Show Password" : "Hide Password"}
+            role="button"
+            tabIndex={0}
+            aria-label={!showConfirmedPassword ? "Show password" : "Hide password"}
+          ></i>
+          <input
+            id="confirmPassword"
+            className="form-control rounded-0"
+            type={showConfirmedPassword ? "text" : "password"}
+            placeholder="Confirm New Password"
+            aria-required="true"
+            autoComplete="new-password"
+            onPaste={(e) => e.preventDefault()}
+            {...register("confirmPassword", {
+              required: "Confirmed password is required",
+              validate: (value) =>
+                value === password || "Passwords do not match"
+            })}
+          />
+          {errors.confirmPassword && (
+            <p className="auth-error-message position-absolute start-0 top-100" role="alert">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+      </fieldset>
+
+      {/* Server-side Error */}
+      {errorMessage && (
+        <p className="text-center text-danger fw-bold mt-2" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      {/* Submit Button */}
+      <button
+        className="auth-btn mt-4"
+        type="submit"
+        aria-label="Submit password reset"
+      >
+        Reset Password
+      </button>
+    </form>
+
+    {/* React Hook Form DevTool (Dev only) */}
+    <DevTool control={control} />
+  </section>
+</main>
+
+
   )
 }

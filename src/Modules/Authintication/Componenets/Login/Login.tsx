@@ -8,6 +8,7 @@ import logo from "../../../../assets/imags/logo.png"
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Login.module.css"
 import { UserToken } from "../../../../Context/UserAuth.context";
+import { AUTHENTICATIONS_URLS } from "../../../../Api/Url";
 
 
 
@@ -65,7 +66,7 @@ const toastId = toast.loading("Waiting....")
 
   try {
     const options = {
-      url:"https://upskilling-egypt.com:3006/api/v1/Users/Login",
+      url:AUTHENTICATIONS_URLS.LOGIN,
       method:"POST",
       data:userInfo,
     }
@@ -74,7 +75,6 @@ const toastId = toast.loading("Waiting....")
 localStorage.setItem("userToken",data.token)
       toast.success("Login successfully.")
             setErrorMessage(null)
-          navigate("/dashboard")
 
         setTimeout(()=>{
           navigate("/dashboard")
@@ -118,96 +118,122 @@ if(isAxiosError(error)){
 
 
 // JSX Start
+
   return (
-    <>
-   <div className={` ${styles["register-box"]}  col-md-5 vh-100`}>
-     <div className=" p-4 mt-4 bg-white rounded-2 shadow-lg overflow-hidden">
-     <div className="register-logo d-flex justify-content-center mb-3">
-     <img className="w-75" src={logo} alt="logo food-recipies" />
-     </div>
-
-        <h2 className="h4"> Log In</h2>
-        <p className=" text-capitalize fs-6 login-text">Welcome Back! Please enter your details</p>
-        <form className="" onSubmit={handleSubmit(handleRegisterUser)}>
-       <div className=" form-box">
-           <div className="left-forms d-flex flex-column gap-4 flex-grow-1">
-         
-{/* Email */}
-
-<div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i className="fa-solid fa-envelope"></i> 
-
- </div>             
-   <input className="form-control rounded-0" type="email" placeholder="Email"
-   {...register("email",{required:"Email Is Required",pattern:{
-    value:/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
-    message:"Email Must Be Valid"
-   }})}
-   
-   />
-         {errors.email && <p className="text-danger error-message position-absolute start-0 top-100">{errors.email.message}</p>}
-
-</div>
-
-
- {/* password */}
-
-<div className="w-100 position-relative">
-  <div className="d-flex gap-1 align-items-center position-relative w-100">
-<div className="register-icons d-flex justify-content-center align-items-center">
-<i  className="fa-solid fa-lock"></i>
-  </div>      
-  <i onClick={()=>{
-  setShowPassword(!showPassword)
-}} className={`fa-solid ${showPassword?"fa-eye":"fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`} title={!showPassword ?"showPassword":"Hide Password"}></i>       
-   <input className="form-control rounded-0" type={!showPassword ?"password":"text"} placeholder="Password"
-   {...register("password",{required:"Password Is Required",pattern:{
-    value:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-    message:`Minimum eight characters, at least one upper case letter, one lower case letter, one number and one special character
-
-`,
-   }})}
-   autoComplete="new-password"
-   />
-
-
-</div>
-         {errors.password && <p className="auth-error-message "> {errors.password.message}</p>}
-
-</div>
-
-
-<div className="navigate-links d-flex justify-content-between mb-2">
-   <Link className="text-black" to={"/register"}>Register Now</Link>
-  <Link className="text-danger" to={"/forget-password"}>Forget Password ?</Link>
-  {/* <Link to={"/verifyemail"}>Verify Your Acount </Link> */}
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- </div>
-
-
-
-       </div>
-   {errorMessage && <p className="text-center text-danger fw-bold">{errorMessage}</p>}
-   <button className="auth-btn register-btn" type="submit"> Login</button>
-        </form>
-         <DevTool control={control} />
+   <main className={`${styles["register-box"]} col-md-5 vh-100`} role="main" aria-labelledby="login-title">
+  <section className="p-4 mt-4 bg-white rounded-2 shadow-lg overflow-hidden">
+    
+    {/* Logo */}
+    <div className="register-logo d-flex justify-content-center mb-3">
+      <img className="w-75" src={logo} alt="Food Recipes logo" />
     </div>
-   </div>
-    </>
+
+    {/* Title */}
+    <h1 id="login-title" className="h4">Log In</h1>
+    <p className="fs-6 login-text">Welcome back! Please enter your details.</p>
+
+    {/* Form */}
+    <form
+      onSubmit={handleSubmit(handleRegisterUser)}
+      aria-describedby="login-form-description"
+    >
+      <p id="login-form-description" className="visually-hidden">
+        Login form for registered users. Requires a valid email and secure password.
+      </p>
+
+      <fieldset className="form-box border-0">
+        <legend className="visually-hidden">Login Credentials</legend>
+
+        {/* Email */}
+        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-3">
+          <label htmlFor="email" className="register-icons d-flex justify-content-center align-items-center">
+            <i className="fa-solid fa-envelope" aria-hidden="true"></i>
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="form-control rounded-0"
+            placeholder="Email"
+            aria-required="true"
+            {...register("email", {
+              required: "Email Is Required",
+              pattern: {
+                value: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
+                message: "Email must be valid"
+              }
+            })}
+          />
+          {errors.email && (
+            <p className="text-danger error-message position-absolute start-0 top-100">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        {/* Password */}
+        <div className="w-100 position-relative mb-3">
+          <label htmlFor="password" className="visually-hidden">Password</label>
+          <div className="d-flex gap-1 align-items-center position-relative w-100">
+            <div className="register-icons d-flex justify-content-center align-items-center">
+              <i className="fa-solid fa-lock" aria-hidden="true"></i>
+            </div>
+            <i
+              onClick={() => setShowPassword(!showPassword)}
+              className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+              title={!showPassword ? "Show password" : "Hide password"}
+              role="button"
+              tabIndex={0}
+              aria-label={!showPassword ? "Show password" : "Hide password"}
+            ></i>
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              className="form-control rounded-0"
+              placeholder="Password"
+              aria-required="true"
+              autoComplete="new-password"
+              {...register("password", {
+                required: "Password is required",
+                pattern: {
+                  value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
+                  message: "Minimum 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character"
+                }
+              })}
+            />
+          </div>
+          {errors.password && (
+            <p className="auth-error-message">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="navigate-links d-flex justify-content-between mb-3" aria-label="Login options">
+          <Link className="text-black" to="/register">Register Now</Link>
+          <Link className="text-danger" to="/forget-password">Forget Password?</Link>
+        </nav>
+      </fieldset>
+
+      {/* Error Message */}
+      {errorMessage && (
+        <p className="text-center text-danger fw-bold" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      {/* Submit Button */}
+      <button
+        className="auth-btn register-btn"
+        type="submit"
+        aria-label="Submit login form"
+      >
+        Login
+      </button>
+    </form>
+
+    {/* React Hook Form DevTool (dev only) */}
+    <DevTool control={control} />
+  </section>
+</main>
+
   )
 }

@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { baseURL } from './Url';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://upskilling-egypt.com:3006',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },

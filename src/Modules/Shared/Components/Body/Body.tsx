@@ -1,5 +1,6 @@
+import { BodyProps } from "../../../../interfaces/interfaces"
 
-export default function Body({header,description,item ,onClick,handleAddTitleAndBtnTextForm ,handleUpdateAndAddFormHeader}:{header:string,description:string,item:string ,onClick:()=>void,handleAddTitleAndBtnTextForm:()=>void ,handleUpdateAndAddFormHeader:(headerName:string)=>void}) {
+export default function Body({header,description,item ,onClick,handleAddTitleAndBtnTextForm,handleUpdateAndAddFormHeader}:BodyProps) {
   return (
     <div className="d-flex justify-content-between align-items-center px-2 py-3 rounded-2 my-2 body-box">
      <div className="body-text">
@@ -8,8 +9,12 @@ export default function Body({header,description,item ,onClick,handleAddTitleAnd
      </div>
      <div className="body-btn">
         <button onClick={()=>{
-          handleUpdateAndAddFormHeader("")
-          handleAddTitleAndBtnTextForm()
+
+       
+
+
+          handleUpdateAndAddFormHeader?.("")
+          handleAddTitleAndBtnTextForm?.()
           onClick()
         }}> Add New {item}</button>
      </div>

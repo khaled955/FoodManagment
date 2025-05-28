@@ -8,6 +8,10 @@ export default function CategoryDetailsView({
   onClick: () => void;
   currentCategory: Category | undefined;
 }) {
+
+
+
+  
   const formattedDate = currentCategory?.modificationDate
     ? new Date(currentCategory.modificationDate).toLocaleDateString()
     : "N/A";
