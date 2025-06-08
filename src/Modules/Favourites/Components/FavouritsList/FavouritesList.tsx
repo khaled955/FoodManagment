@@ -30,7 +30,7 @@ const [showDeleteModal , setShowDeleteModal] = useState(false)
 const [selectedId , setSelectedId] = useState< number | null>(null)
 const isAdmine = useRole()
 const navigate = useNavigate()
-
+const [isLoading , setIsLoading] = useState(false)
 
 
 
@@ -85,6 +85,7 @@ setSelectedId(favObj.id)
  async function handleDeletFavRecipe(){
 
   if(!selectedId) return ;
+  setIsLoading(true)
   const toastId = toast.loading("Waiting.....")
    
 try {
@@ -114,6 +115,7 @@ try {
   
 }finally{
   toast.dismiss(toastId)
+  setIsLoading(false)
 }
 
 
@@ -193,6 +195,7 @@ try {
       {/* Delete Button */}
       <footer className="text-end mt-4">
         <button
+        disabled={isLoading}
           className="btn btn-danger"
         
           aria-label="Confirm delete item"
@@ -204,7 +207,7 @@ try {
             },2000)
           }}
         >
-         Remove
+         {isLoading ?<i className="fa-solid fa-spinner fa-spin"></i> :"Remove"}
         </button>
       </footer>
     </section>
