@@ -130,7 +130,7 @@ export interface DeletConfirmationModalProps {
   type: string;
   handleDeleteDataByAdmin?:(deletUrl:string, msg:string, id:number)=>void;
   handleDeleteRecipesByAdmin?:(deletUrl:string, msg:string)=>Promise<any>;
-  deleteLoading:boolean;
+  deleteLoading?:boolean;
 }
 
 
