@@ -4,11 +4,11 @@ import  dashboardimg from "../../../../assets/imags/otherheaderphotosection.png"
 import Header from "../../../Shared/Components/Header/Header"
 import NoData from "../../../Shared/Components/NoData/NoData"
 import ActionBtnGroup from "../../../Shared/Components/ActionBtnGroup/ActionBtnGroup"
-import { useEffect, useState } from "react"
-import { FoodItem, RecipeListActionProps } from "../../../../interfaces/interfaces"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { Category, FavRecipe, FoodItem, RecipeListActionProps, Tag } from "../../../../interfaces/interfaces"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../../../Api/AxiosInstance"
-import { baseURL, RECIPES_URLS } from "../../../../Api/Url.tsx"
+import { baseURL, CATEGORIES_URL, RECIPES_URLS, TAGS_URLS, USER_FAV_URLS } from "../../../../Api/Url.tsx"
 import Loading from "../../../Shared/Components/Loading/Loading.tsx"
 import DeletConfirmationModal from "../../../Shared/Components/DeletConfirmationModal/DeletConfirmationModal.tsx"
 import toast from "react-hot-toast"
@@ -16,7 +16,11 @@ import { isAxiosError } from "axios"
 
 import defaultImage from "../../../../assets/imags/logo.png"
 import RecipeDetails from "../RecipeDetails/RecipeDetails.tsx"
-import { Helmet } from "react-helmet"
+import { Helmet } from 'react-helmet-async';
+import useRole from "../../../../Hooks/useRole.tsx"
+import { AdminActions } from "../../../../Context/AdminActions.context.tsx"
+import { debounce } from "lodash"
+import Pagination from "../../../Shared/Components/Pagination/Pagination.tsx"
 
 
 
@@ -34,23 +38,41 @@ const [actionDeletType] = useState("recipes")
 const [showRecipeDetailsView , setRecipeDetailsView] = useState(false)
 const [isSorted , setIsSorted] = useState(false)
 const [isPriceSorted , setIsPriceSorted] = useState(false)
+const [currentPage , setCurrentPage] = useState(1)
+const [totalNumberOfPages , setTotalNumberOfPages] = useState(1)
+const [tagList , setTagList] = useState([])
+const [searchQuery , setSearchQuery] = useState("")
+const [searchqueryTag,setSearchQueryTag] = useState("")
+const [searchQueryCategory , setSearchQueryCategory] = useState("")
+const [favList , setFavList] = useState<FavRecipe[]>([])
+const [isFav , setIsFav] = useState(false)
 const navigate = useNavigate()
+const [isLoading , setIsLoading] = useState(false)
+const isAdmine = useRole()
+const {categoryList,handleGetDataByAdmin:handleGetAllCategories}= useContext(AdminActions)!;
 
 
 
 
 
+//  get all tags
+ async function getTagList(){
+    const {data} = await axiosInstance.get(TAGS_URLS.GET_ALL_TAGS)
+    setTagList(data)
+}
+
+// get tagList for select input
+useEffect(()=>{
+    getTagList()
+},[])
 
 
 
 
-
-
-
-
-
-
-
+// get all categories in select input field
+useEffect(()=>{
+    handleGetAllCategories(CATEGORIES_URL.GET_ALL_CATEGORIES(10,1))
+},[handleGetAllCategories])
 
 
 
@@ -69,11 +91,12 @@ try {
 
     const {data} = await axiosInstance.request(options)
     setRecipesList(data.data)
+    setTotalNumberOfPages(data.totalNumberOfPages)
     
 } catch (error) {
-    
-console.log(error)
-
+    if(isAxiosError(error)){
+    toast.error(error.response?.data.message || "Some thing go wronge")
+    }
 }
 
 
@@ -84,21 +107,24 @@ console.log(error)
     
 
 
+
+
 useEffect(()=>{
 
 
   
 
+handleGetDataByAdmin(RECIPES_URLS.GET_ALL_RECIPES(4,currentPage))
 
-handleGetDataByAdmin(RECIPES_URLS.GET_ALL_RECIPES(10,1))
 
-},[])
+},[currentPage])
 
 
 // Delet Recipes
 
  async function handleDeleteRecipesByAdmin(deletUrl:string, msg:string){
   const toastId = toast.loading("Waiting")
+  setIsLoading(true)
 try {
     const options = {
         url:deletUrl,
@@ -107,20 +133,19 @@ try {
         
     }
 
-    const {data} = await axiosInstance.request(options)
-    console.log(data)
+     await axiosInstance.request(options)
     toast.success(msg)
      await handleGetDataByAdmin(RECIPES_URLS.GET_ALL_RECIPES(10,1))
     
 } catch (error) {
     if(isAxiosError(error)){
-        console.log(error)
-        toast.error(error.response?.data.message)
+        toast.error(error.response?.data.message || "Some thing go wronge")
     }
 
 
 }finally{
         toast.dismiss(toastId)
+        setIsLoading(false)
     }
 
 
@@ -146,7 +171,6 @@ try {
 
 
 
-if(!recipesList) return <Loading/>
 
 
 
@@ -214,6 +238,8 @@ function handleReverseRecipesByName(){
 
 
 //  sort recipes according to price 
+
+
 function handleSortRecipesByPrice(){
    if (recipesList) {
   const sortedRecipesList = [...recipesList].sort((a:FoodItem, b:FoodItem) =>
@@ -224,6 +250,12 @@ function handleSortRecipesByPrice(){
 }
 
 }
+
+
+
+
+
+
 
 
 function handleReverseRecipesByPrice(){
@@ -249,6 +281,120 @@ function handleImage(path:string){
 }
 
 
+//  start logic handle search by Name input
+function handleSearchByName(e:React.ChangeEvent<HTMLInputElement>){
+  
+const query = e.target.value
+setSearchQuery(query)
+setCurrentPage(1)
+debounceSearchByName(e.target.value)
+
+}
+
+// debounce function for search by name 
+
+const debounceSearchByName = useMemo(()=>{
+
+return debounce((query:string)=>{
+handleGetDataByAdmin(RECIPES_URLS.GET_ALL_RECIPES(4,currentPage,query))
+},300)
+
+
+},[currentPage])
+
+
+// clean up debounce function 
+
+
+useEffect(()=>{
+  return ()=>{
+    debounceSearchByName.cancel()
+  }
+},[debounceSearchByName])
+
+
+
+// End logic of search by name inpute
+
+
+// handlefilterBy Tag Name
+
+function handleFilterByTagName(e:React.ChangeEvent<HTMLSelectElement>){
+  
+const query = e.target.value
+  setSearchQueryTag(query)
+handleGetDataByAdmin(RECIPES_URLS.GET_ALL_RECIPES(4,currentPage,searchQuery,e.target.value,searchQueryCategory))
+
+}
+
+
+// handle filter By Category Name
+
+
+function handleFilterByCategoryName(e:React.ChangeEvent<HTMLSelectElement>){
+  
+const query = e.target.value
+  setSearchQueryCategory(query)
+handleGetDataByAdmin(RECIPES_URLS.GET_ALL_RECIPES(4,currentPage,searchQuery,searchqueryTag,e.target.value))
+
+}
+
+
+// check if current recipe in favourite List 
+
+// function get all fav recipes 
+
+async function getAllFavList(){
+  try {
+    const {data} = await axiosInstance.get(USER_FAV_URLS.GET_FAV_RECIPES)
+    setFavList(data.data)
+  } catch (error) {
+    if(isAxiosError(error)){
+      toast.error(error.message || "Some thing go wrong")
+    }
+  }
+}
+
+useEffect(()=>{
+  if(isAdmine) return 
+  getAllFavList()
+},[currentRecipe?.id,isAdmine])
+
+
+
+const checkRecipeInFavList = useCallback((id: number) => {
+ 
+const isInFavList = favList.some((fav:FavRecipe)=> fav.recipe.id === id)
+  return isInFavList
+}, [favList]); 
+
+
+
+
+
+useEffect(() => {
+  if (currentRecipe) {
+     const isInFav = checkRecipeInFavList(currentRecipe.id);
+    setIsFav(isInFav)
+  }
+}, [currentRecipe, checkRecipeInFavList]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(!recipesList) return <Loading/>
 
 
 
@@ -287,13 +433,13 @@ return (
         <p className="text-info">You can check all details</p>
       </div>
       <div className="body-btn">
-        <button
+      {isAdmine &&   <button
           className="btn btn-success"
           onClick={handleNavigateToRecipeData}
           aria-label="Add new recipe"
         >
           Add New Item
-        </button>
+        </button>}
       </div>
     </section>
 
@@ -301,6 +447,8 @@ return (
       <RecipeDetails
         currentRecipe={currentRecipe}
         handleHideRecipeDetailsView={handleHideRecipeDetailsView}
+        isFav={isFav}
+        getAllFavList={getAllFavList}
       />
     )}
 
@@ -312,8 +460,32 @@ return (
         handleHideDeletModal={handleHideDeletModal}
         actionDeletType={actionDeletType}
         handleDeleteRecipesByAdmin={handleDeleteRecipesByAdmin}
+        deleteLoading={isLoading}
       />
     )}
+
+
+{/*  Search box */}
+
+<div className="search-box d-flex gap-1 mb-3">
+  <input onChange={(e)=>{handleSearchByName(e)}} value={searchQuery} className="flex-grow-1" type="text"  placeholder="Search By Name ...."/>
+
+  <select  value={searchqueryTag} onChange={(e)=>{handleFilterByTagName(e)}}>
+    <option disabled value="">Filter By Tage Name</option>
+    <option value="">All Tags</option>
+    {tagList.map((tag:Tag)=><option key={tag.id} value={tag.id}>{tag.name}</option>)}
+  </select>
+
+<select value={searchQueryCategory} onChange={(e)=>{handleFilterByCategoryName(e)}}>
+  <option disabled value=""> Filter By Category</option>
+  <option value=""> All Category</option>
+  {categoryList?.map((cat:Category)=><option key={cat.id} value={cat.id}>{cat.name}</option>)}
+</select>
+
+
+</div>
+
+
 
     <main role="main" aria-label="Recipes table section">
       {recipesList.length > 0 ? (
@@ -360,7 +532,7 @@ return (
                       <i
                         onClick={() => {
                           setIsPriceSorted(false);
-                          handleSortRecipesByPrice();
+                          handleReverseRecipesByPrice()
                         }}
                         className="fa-solid fa-caret-up"
                         role="button"
@@ -371,7 +543,7 @@ return (
                       <i
                         onClick={() => {
                           setIsPriceSorted(true);
-                          handleReverseRecipesByPrice();
+                          handleSortRecipesByPrice()
                         }}
                         className="fa-solid fa-caret-down"
                         role="button"
@@ -408,22 +580,35 @@ return (
                   <td>{recipe.tag.name}</td>
                   <td>{recipe.category[0].name}</td>
                   <td>
-                    <ActionBtnGroup
+                   <ActionBtnGroup
                       handleSetCurrentId={handleSetCurrentId}
                       handleShowDeletModal={handleShowDeletModal}
                       recipeInfo={recipe}
                       handleSetRecipeUpdateAction={handleSetRecipeUpdateAction}
                       hanldleViewClick={hanldleViewClick}
-                    />
+                    /> 
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          
         </div>
       ) : (
-        <NoData />
+         
+                      <div className="d-flex justify-content-center align-items-center">
+                        <NoData />
+                  
+                      </div>
       )}
+
+{/*  pagination  */}
+
+<Pagination currentPage={currentPage} totalPages={totalNumberOfPages} onPageChange={setCurrentPage}/>
+
+
+
     </main>
   </>
 );

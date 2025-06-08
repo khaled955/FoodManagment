@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import  dashboardimg from "../../../../assets/imags/otherheaderphotosection.png"
 import ActionBtnGroup from "../../../Shared/Components/ActionBtnGroup/ActionBtnGroup"
 import Body from "../../../Shared/Components/Body/Body"
@@ -12,7 +12,11 @@ import AddAndUpdateForm from "../../../Shared/Components/AddAndUpdateForm/AddAnd
 import DeletConfirmationModal from "../../../Shared/Components/DeletConfirmationModal/DeletConfirmationModal"
 import CategoryDetailsView from "../CategoryDetailsView/CategoryDetailsView.tsx"
 import { CATEGORIES_URL } from "../../../../Api/Url.tsx"
-import { Helmet } from "react-helmet"
+import { Helmet } from 'react-helmet-async';
+import { debounce } from "lodash"
+import Pagination from "../../../Shared/Components/Pagination/Pagination.tsx"
+import useRole from "../../../../Hooks/useRole.tsx"
+import { useNavigate } from "react-router-dom"
 
 const dashboardHeaderOne = "Categories"
 const dashboardHeaderTwo = "Items"
@@ -31,28 +35,79 @@ const [showDeleteConfirmation , setShowDeleteConfirmation] = useState(false)
 const [actionDeletType] = useState("category")
 const [showCategoryDetailsView , setCategoryDetailsView] = useState(false)
 const [isSorted , setIsSorted] = useState(false)
-
-
-
+const [currentPage , setCurrentPage] = useState(1)
+const [totalNumberOfPages , setTotalNumberOfPages] = useState(1)
+const [searchQuery , setSearchQuery] = useState("")
+const isAdmine = useRole()
+const navigate = useNavigate()
 const {handleGetDataByAdmin} = useContext(AdminActions)!;
 const {categoryList,handleSortCategoriesByName,handleReverseCategoriesByName} = useContext(AdminActions)!;
 
 
+
+
+
+
+
+
+
 useEffect(()=>{
+  if(!isAdmine) return 
+async function fetchData(){
+   const data = await handleGetDataByAdmin(CATEGORIES_URL.GET_ALL_CATEGORIES(5,currentPage,searchQuery))
+  setTotalNumberOfPages(data.totalNumberOfPages)
+
+}
+
+fetchData()
+},[currentPage,searchQuery])
 
 
+//  start logic handle search by Name input
+function handleSearchByName(e:React.ChangeEvent<HTMLInputElement>){
   
+const query = e.target.value
+setSearchQuery(query)
+setCurrentPage(1)
+debounceSearchByName(e.target.value)
+
+}
+
+// debounce function for search by name 
+
+const debounceSearchByName = useMemo(()=>{
+
+return debounce((query:string)=>{
+handleGetDataByAdmin(CATEGORIES_URL.GET_ALL_CATEGORIES(5,1,query))
+},300)
 
 
-handleGetDataByAdmin(CATEGORIES_URL.GET_ALL_CATEGORIES(10,1))
-
-},[])
+},[currentPage])
 
 
+// clean up debounce function 
+
+
+useEffect(()=>{
+  return ()=>{
+    debounceSearchByName.cancel()
+  }
+},[debounceSearchByName])
 
 
 
-if(!categoryList) return <Loading/>
+// End logic of search by name inpute
+
+
+
+
+
+
+
+
+
+
+
 
 
 function handleShowUpdateAndUpdateForm(){
@@ -108,9 +163,20 @@ function handleHideCategoryDetailsView(){
 }
 
 
+// handle Deeplinking
+
+useEffect(() => {
+  if (!isAdmine) {
+
+    navigate("/dashboard");
+    return 
+  }
+}, [isAdmine, navigate]);
 
 
 
+
+if(!categoryList) return <Loading/>
 
   return (
    <>
@@ -142,6 +208,15 @@ function handleHideCategoryDetailsView(){
 
    {/*  table to display categories */}
 
+  {/*  Search box */}
+  
+  <div className="search-box d-flex gap-1 mb-3">
+    <input onChange={(e)=>{handleSearchByName(e)}} value={searchQuery} className="flex-grow-1" type="text"  placeholder="Search By Name ...."/>
+  
+   
+  
+  
+  </div>
   
    
 <section className="table-box" aria-labelledby="category-table-heading">
@@ -218,6 +293,17 @@ function handleHideCategoryDetailsView(){
       )}
     </tbody>
   </table>
+
+
+{/*  pagination  */}
+
+<Pagination currentPage={currentPage} totalPages={totalNumberOfPages} onPageChange={setCurrentPage}/>
+
+
+
+
+
+
 </section>
 
 

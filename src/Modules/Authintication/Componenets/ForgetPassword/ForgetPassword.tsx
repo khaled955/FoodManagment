@@ -39,8 +39,9 @@ const navigate = useNavigate()
     register,
     handleSubmit,
     control,
+    watch,
    
-    formState: { errors },
+    formState: { errors,isSubmitting },
   } = useForm<formData>({mode:"onChange"})
 
 
@@ -62,7 +63,7 @@ const toastId = toast.loading("Waiting....")
       toast.success(data.message)
             setErrorMessage(null)
         setTimeout(()=>{
-          navigate("/reset-password")
+          navigate("/reset-password",{state:{email:watch("email")}})
         },3000)
      
 
@@ -163,8 +164,9 @@ if(isAxiosError(error)){
         className="auth-btn mt-4"
         type="submit"
         aria-label="Send password reset link to email"
+        disabled={isSubmitting}
       >
-        Send
+        {isSubmitting? <i className="fa-solid fa-spinner fa-spin"></i>:"Send"}
       </button>
     </form>
 

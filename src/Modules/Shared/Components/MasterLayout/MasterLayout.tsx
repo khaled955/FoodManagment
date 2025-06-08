@@ -1,27 +1,32 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import MySidebar from "../Sidebar/MySidebar";
+import { useState } from "react";
 
 
 
 
 export default function MasterLayout() {
+const [isCollapse , setIsCollapse] = useState(false)
 
 
 
-
+function handleToggleCollapse(){
+  setIsCollapse(!isCollapse)
+}
 
 
 
   return<>
-         <Navbar/>
+         
 <div className="container-fluid min-vh-100 d-flex p-0">
 
 <div className="side-bar">
-  <MySidebar/>
+  <MySidebar handleToggleCollapse={handleToggleCollapse} isCollapse={isCollapse}/>
 </div>
 
-  <div className="py-5 w-100 px-4">
+  <div className={`${isCollapse?"w-100 ms-5":"outlet-collapse"} p-5`}>
+    <Navbar/>
         <Outlet></Outlet>
   </div>
 

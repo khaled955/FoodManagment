@@ -57,7 +57,7 @@ const userContext = useContext(UserToken);
     handleSubmit,
     control,
    
-    formState: { errors },
+    formState: { errors,isSubmitting },
   } = useForm<formData>({mode:"onChange"})
 
 
@@ -225,8 +225,9 @@ if(isAxiosError(error)){
         className="auth-btn register-btn"
         type="submit"
         aria-label="Submit login form"
+        disabled={isSubmitting}
       >
-        Login
+        {isSubmitting ?<i className="fa-solid fa-spinner fa-spin"></i> : "Login"}
       </button>
     </form>
 

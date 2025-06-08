@@ -52,7 +52,7 @@ const navigate = useNavigate()
     handleSubmit,
     control,
     watch,
-    formState: { errors },
+    formState: { errors ,isSubmitting},
   } = useForm<formData>({mode:"onTouched",defaultValues:{
     country:"",
   }})
@@ -73,7 +73,7 @@ const toastId = toast.loading("Waiting....")
       toast.success("Account created successfully.")
             setErrorMessage(null)
         setTimeout(()=>{
-          navigate("/verify-email")
+          navigate("/verify-email",{state:{email:watch("email")}})
         },3000)
      
 
@@ -327,7 +327,7 @@ handleChangePrefix()
 
        </div>
    {errorMessage && <p className="text-center text-danger fw-bold">{errorMessage}</p>}
-   <button className="auth-btn mt-4" type="submit"> Register</button>
+   <button className="auth-btn mt-4" type="submit" disabled={isSubmitting}>{isSubmitting ?<i className="fa-solid fa-spinner fa-spin"></i> :"Register"} </button>
         </form>
          <DevTool control={control} />
     </div>

@@ -13,11 +13,12 @@ export default function RecipeForm({recipestate,recipeInfo}:{recipestate:string,
 const [tagList , setTagList] = useState<Tag[]>([])
 const navigate = useNavigate()
 const [reviewImage , setReviewImage] = useState<string | null>()
+const [isLoading , setIsLoading] = useState(false)
 
-const {register,formState:{errors,isSubmitting},handleSubmit,watch}= useForm<RecipeFormData>({mode:"onChange",defaultValues:{name:recipeInfo? recipeInfo.name:"",description: recipeInfo ?recipeInfo.description:"",
-    price:recipeInfo? recipeInfo.price?.toString() :"",categoriesIds:recipeInfo?recipeInfo.category[0].id.toString():"",
+
+const {register,formState:{errors},handleSubmit,watch}= useForm<RecipeFormData>({mode:"onChange",defaultValues:{name:recipeInfo? recipeInfo.name:"",description: recipeInfo ?recipeInfo.description:"",
+    price:recipeInfo? recipeInfo.price?.toString() :"",categoriesIds:recipeInfo?recipeInfo.category[0].id.toString():"",tagId:recipeInfo? recipeInfo.tag.id.toString():"",
 }})
-
 
 
 
@@ -86,31 +87,34 @@ function handleConvertDataIntoFormData(data:RecipeFormData){
 // handle Create New Recipe
 
  async function handleCreateNewRecipe(data:RecipeFormData){
+  setIsLoading(true)
 const toastId = toast.loading("Waiting......")
 
 try {
     const formData = handleConvertDataIntoFormData(data)
-    console.log(formData)
     const {data:response} = await axiosInstance.post(RECIPES_URLS.CREATE_RECIPE,formData)
     toast.success(response.message)
     setTimeout(()=>{
         navigate("/dashboard/recipes")
-    },2000)
+    },1000)
 } catch (error) {
     if(isAxiosError(error))
     toast.error(error.message)
 console.log(error)
 }finally{
     toast.dismiss(toastId)
+    setIsLoading(false)
 }
 
 
 }
+
 
 
 //hanle update Current Recipe 
 
  async function handleUpdateCurrentRecipe(data:RecipeFormData,recipeId:number){
+  setIsLoading(true)
 const toastId = toast.loading("Waiting......")
 
 try {
@@ -121,13 +125,14 @@ try {
 
     setTimeout(()=>{
         navigate("/dashboard/recipes")
-    },2000)
+    },1000)
 } catch (error) {
     if(isAxiosError(error))
     toast.error(error.message)
 console.log(error)
 }finally{
     toast.dismiss(toastId)
+    setIsLoading(false)
 }
 
 
@@ -161,7 +166,7 @@ function handleSubmitForm(data:RecipeFormData){
   >
     <p id="form-description" className="visually-hidden">Use this form to add or update a recipe including name, tag, category, price, description, and image.</p>
 
-    <fieldset>
+    <fieldset className="d-flex flex-column gap-2">
       <legend className="visually-hidden">Recipe Basic Info</legend>
 
       {/* Name */}
@@ -202,7 +207,7 @@ function handleSubmitForm(data:RecipeFormData){
           className="form-control"
           placeholder="Price"
           aria-required="true"
-          {...register("price", { required: "Price Is Required" })}
+          {...register("price", { required: "Price Is Required", validate:(price)=> Number(price) > 0 || "Price must be greater than zero" })}
         />
         {errors.price && <p className="auth-error-message">{errors.price.message}</p>}
       </div>
@@ -282,12 +287,12 @@ function handleSubmitForm(data:RecipeFormData){
     {/* Actions */}
     <div className="action-recipe-btn d-flex justify-content-between align-items-center">
       <button
-        disabled={isSubmitting}
+        disabled={isLoading}
         className="btn btn-danger"
         type="submit"
         aria-label={recipestate === "Add" ? "Save Recipe" : "Update Recipe"}
       >
-        {isSubmitting ? (
+        {isLoading ? (
           <i className="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
         ) : recipestate === "Add" ? "Save" : "Update"}
       </button>

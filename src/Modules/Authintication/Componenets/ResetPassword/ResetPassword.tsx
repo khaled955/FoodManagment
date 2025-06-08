@@ -1,11 +1,11 @@
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { DevTool } from "@hookform/devtools";
 import toast from "react-hot-toast";
 import axios, { isAxiosError } from "axios";
 import logo from "../../../../assets/imags/logo.png"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResetPassword.module.css"
 import { AUTHENTICATIONS_URLS } from "../../../../Api/Url";
 
@@ -34,8 +34,7 @@ const [showPassword , setShowPassword] = useState(false)
 const [showConfirmedPassword , setShowConfirmedPassword] = useState(false)
 const [errorMessage , setErrorMessage] = useState<null | string>(null)
 const navigate = useNavigate()
-
-
+const location = useLocation()
 
 // useForm hook for form validation
 
@@ -44,8 +43,9 @@ const navigate = useNavigate()
     handleSubmit,
     control,
     watch,
+    trigger,
     formState: { errors },
-  } = useForm<formData>({mode:"onChange"})
+  } = useForm<formData>({mode:"onChange",defaultValues:{email:location.state.email}})
 
 
  async function handleRegisterUser(userInfo:formData){
@@ -93,14 +93,27 @@ if(isAxiosError(error)){
 
 
 
-// check password Event handler
-
-const password = watch("password")
 
 
 
 
+// check confirmed password and password are identicals
+useEffect(()=>{
+const subscribtion = watch((_,{name})=>{
+if(name === "password"){
+  trigger("confirmPassword")
+}
 
+
+})
+
+
+return ()=>{
+  subscribtion.unsubscribe()
+}
+
+
+},[trigger,watch])
 
 
 // JSX Start
@@ -128,7 +141,7 @@ const password = watch("password")
         <legend className="visually-hidden">Reset Password Form</legend>
 
         {/* Email */}
-        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-3">
+        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-4">
           <label htmlFor="email" className="register-icons d-flex justify-content-center align-items-center">
             <i className="fa-solid fa-envelope" aria-hidden="true"></i>
           </label>
@@ -154,7 +167,7 @@ const password = watch("password")
         </div>
 
         {/* OTP */}
-        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-3">
+        <div className="d-flex gap-1 align-items-center position-relative w-100 mb-4">
           <label htmlFor="seed" className="register-icons d-flex justify-content-center align-items-center">
             <i className="fa-solid fa-user fs-4" aria-hidden="true"></i>
           </label>
@@ -180,7 +193,7 @@ const password = watch("password")
         </div>
 
         {/* New Password */}
-        <div className="w-100 position-relative mb-3">
+        <div className="w-100 position-relative mb-4">
           <label htmlFor="password" className="visually-hidden">New Password</label>
           <div className="d-flex gap-1 align-items-center position-relative w-100">
             <div className="register-icons d-flex justify-content-center align-items-center">
@@ -240,7 +253,7 @@ const password = watch("password")
             {...register("confirmPassword", {
               required: "Confirmed password is required",
               validate: (value) =>
-                value === password || "Passwords do not match"
+                value === watch("password") || "Passwords do not match"
             })}
           />
           {errors.confirmPassword && (

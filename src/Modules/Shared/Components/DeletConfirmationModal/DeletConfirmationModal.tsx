@@ -8,9 +8,9 @@ import { RECIPES_URLS } from "../../../../Api/Url";
 
 const delet_URL = "/api/v1/Category/"
 
-export default function DeletConfirmationModal({onClick,handleDeleteRecipesByAdmin,currentId,handleHideDeletModal,actionDeletType,type}:DeletConfirmationModalProps) {
+export default function DeletConfirmationModal({onClick,handleDeleteRecipesByAdmin,currentId,handleHideDeletModal,actionDeletType,type,deleteLoading}:DeletConfirmationModalProps) {
 
-const {handleDeleteDataByAdmin} = useContext(AdminActions)!;
+const {handleDeleteDataByAdmin,isLoading} = useContext(AdminActions)!;
 
 
 
@@ -52,8 +52,9 @@ const {handleDeleteDataByAdmin} = useContext(AdminActions)!;
 
       {/* Delete Button */}
       <footer className="text-end mt-4">
-        <button
-          className="btn btn-danger"
+        <button disabled={isLoading || deleteLoading}
+
+          className="btn btn-danger default-btn"
           onClick={() => {
             if (actionDeletType === "category")
               handleDeleteDataByAdmin?.(delet_URL, "Category Deleted Successfully", currentId);
@@ -63,11 +64,11 @@ const {handleDeleteDataByAdmin} = useContext(AdminActions)!;
 
             setTimeout(() => {
               handleHideDeletModal();
-            }, 2000);
+            }, 1000);
           }}
           aria-label="Confirm delete item"
         >
-          Delete This Item
+          {isLoading || deleteLoading? <i className="fa-solid fa-spinner fa-spin"></i>:"Delete This Item"}
         </button>
       </footer>
     </section>

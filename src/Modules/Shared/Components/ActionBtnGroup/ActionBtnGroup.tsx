@@ -2,6 +2,7 @@ import { Dropdown } from 'react-bootstrap';
 import { BsThreeDotsVertical, BsEye, BsPencil, BsTrash } from 'react-icons/bs';
 import { ActionBtnGroupProps} from '../../../../interfaces/interfaces';
 import { useNavigate } from 'react-router-dom';
+import useRole from '../../../../Hooks/useRole';
 
 
 
@@ -10,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const ActionBtnGroup = ({handleUpdateTitleAndBtnTextForm,recipeInfo,catDetails,handleUpdateAndAddFormHeader,handleSetCurrentId,handleSetCurrentCategory,handleShowDeletModal ,handleShowCategoryDetailsView,handleSetRecipeUpdateAction,hanldleViewClick}:ActionBtnGroupProps) => {
 
 const navigate = useNavigate()
-
+const isAdmine = useRole()
 function handleUpdateRecipeActionAndNavigate(){
 handleSetRecipeUpdateAction!();
     navigate("/dashboard/recipe-data",{state:{recipeAction:"Update",recipeInfo}})
@@ -46,7 +47,7 @@ handleSetRecipeUpdateAction!();
           View
         </Dropdown.Item>
 
-        <Dropdown.Item onClick={()=>{
+        {isAdmine && <Dropdown.Item onClick={()=>{
 
   // recipe module action 
 if(recipeInfo){
@@ -64,9 +65,9 @@ handleUpdateTitleAndBtnTextForm?.()
           <BsPencil className="me-2 text-primary" />
           Edit
         </Dropdown.Item>
+}
 
-
-        <Dropdown.Item onClick={()=>{
+       {isAdmine&&  <Dropdown.Item onClick={()=>{
           if(catDetails) {
             handleSetCurrentId!(catDetails.id)
 
@@ -80,6 +81,9 @@ handleUpdateTitleAndBtnTextForm?.()
           <BsTrash className="me-2 text-danger" />
           Delete
         </Dropdown.Item>
+
+}
+
       </Dropdown.Menu>
     </Dropdown>
   );

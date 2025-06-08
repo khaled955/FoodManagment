@@ -17,12 +17,12 @@ export default function AddAndUpdateForm({
 }: AddAndUpdateFormProps) {
 
 
-  const { handleAddDataByAdmin, handleUpdateDataByAdmin } = useContext(AdminActions)!;
+  const { handleAddDataByAdmin, handleUpdateDataByAdmin,isLoading } = useContext(AdminActions)!;
   const {
     handleSubmit,
     formState: { errors },
     register,
-  } = useForm<MyformData>();
+  } = useForm<MyformData>({defaultValues:{name:updateAndAddFormHeader}});
 
   const onSubmit = (data: MyformData) => {
     if (title === "Add New Category") {
@@ -73,8 +73,8 @@ export default function AddAndUpdateForm({
             )}
           </div>
 
-          <button className="auth-btn my-4" type="submit">
-            {btnText || "Save"}
+          <button disabled={isLoading} className="auth-btn my-4" type="submit">
+           {isLoading ?<i className="fa-solid fa-spinner fa-spin"></i> :  btnText || "Save"}
           </button>
         </form>
       </div>

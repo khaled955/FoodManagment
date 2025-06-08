@@ -32,7 +32,7 @@ export default function Header({ imgePath, titleOne, text, titleTwo }: HeaderPro
       </div>
 
       {/* Decorative Circles */}
-      <img className="position-absolute top-0 mt-3 ms-4" src={mediumCircle} alt="" aria-hidden="true" />
+      <img className="position-absolute top-0 mt-3 ms-4 img-circle" src={mediumCircle} alt="" aria-hidden="true" />
       <img className="position-absolute bottom-0 mt-3 large-ellipse-left" src={largeCircle} alt="" aria-hidden="true" />
 
       <img className="position-absolute top-0 mt-3 start-50 translate-middle-x" src={largeCircle} alt="" aria-hidden="true" />

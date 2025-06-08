@@ -59,6 +59,7 @@ export type MyformData = {
   handleDeleteDataByAdmin:(deletUrl: string,msg:string,id:number) => Promise<any>;
   handleSortCategoriesByName:()=>void;
   handleReverseCategoriesByName:()=>void;
+  isLoading:boolean;
 }
 
 
@@ -129,6 +130,7 @@ export interface DeletConfirmationModalProps {
   type: string;
   handleDeleteDataByAdmin?:(deletUrl:string, msg:string, id:number)=>void;
   handleDeleteRecipesByAdmin?:(deletUrl:string, msg:string)=>Promise<any>;
+  deleteLoading:boolean;
 }
 
 
@@ -171,6 +173,8 @@ export interface RecipeFormData {
  export interface RecipeDetailsProps {
   handleHideRecipeDetailsView: () => void;
   currentRecipe: FoodItem | null;
+  isFav:boolean;
+  getAllFavList:()=>void
 }
 
 
@@ -196,4 +200,74 @@ export interface AddAndUpdateFormProps {
   updateAndAddFormHeader: string;
   currentId: number;
   handleHideUpdateAndUpdateForm: () => void;
+}
+
+
+
+export interface Group {
+  id: number;
+  name: string;
+  creationDate: string;
+  modificationDate: string;
+}
+
+export interface User {
+  id: number;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  country: string;
+  imagePath: string | null;
+  group: Group;
+  creationDate: string;
+  modificationDate: string;
+}
+
+
+
+
+
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  maxVisiblePages?: number; // optional, defaults to 8
+}
+
+
+
+
+
+export interface Tag {
+  id: number;
+  name: string;
+  creationDate: string;
+  modificationDate: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  creationDate: string;
+  modificationDate: string;
+}
+
+export interface Recipe {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  imagePath: string;
+  creationDate: string;
+  modificationDate: string;
+  category: Category[];
+  tag: Tag;
+}
+
+export interface FavRecipe {
+  id: number;
+  creationDate: string;
+  modificationDate: string;
+  recipe: Recipe;
 }

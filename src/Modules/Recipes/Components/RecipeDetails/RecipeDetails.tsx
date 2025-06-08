@@ -3,9 +3,18 @@ import { RecipeDetailsProps } from "../../../../interfaces/interfaces";
 import { FaTags, FaDollarSign } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
 import defaultImage from "../../../../assets/imags/loginbg.png";
-import { baseURL } from "../../../../Api/Url";
+import { baseURL, USER_FAV_URLS } from "../../../../Api/Url";
+import useRole from "../../../../Hooks/useRole";
+import toast from "react-hot-toast";
+import axiosInstance from "../../../../Api/AxiosInstance";
+import { isAxiosError } from "axios";
+import { useState } from "react";
 
-export default function RecipeDetails({handleHideRecipeDetailsView, currentRecipe,}: RecipeDetailsProps) {
+export default function RecipeDetails({handleHideRecipeDetailsView, currentRecipe,isFav,getAllFavList}: RecipeDetailsProps) {
+const isAdmine = useRole()
+const [isLoading, setIsLoading] = useState(false)
+
+
 
 
 
@@ -14,7 +23,47 @@ export default function RecipeDetails({handleHideRecipeDetailsView, currentRecip
   }
 
 
-  
+  // function add recipes to fav list 
+ async function handleAddRecipeToFavourites(recipeId:number){
+  setIsLoading(true)
+  const toastId = toast.loading("Waiting.....")
+
+  try {
+   
+    const options = {
+      method: "POST",
+      url:USER_FAV_URLS.CREATE_FAV_RECIPE,
+      data:{
+        recipeId,
+      }
+    }
+
+   await  axiosInstance.request(options)
+      
+
+toast.success(`${currentRecipe?.name} is Added Successfully 👌`)
+getAllFavList()
+
+  } catch (error) {
+if(isAxiosError(error)){
+  toast.error("Something went wrong")
+}
+   
+
+  } finally{
+
+    toast.dismiss(toastId)
+    setIsLoading(false)
+  }
+}
+
+
+
+
+
+
+
+
 
   if (!currentRecipe) return null;
 
@@ -36,6 +85,13 @@ export default function RecipeDetails({handleHideRecipeDetailsView, currentRecip
           className="btn-close position-absolute top-0 end-0 m-3"
           aria-label="Close recipe details"
         ></button>
+
+{/* fav icon */}
+{!isAdmine && isFav   && <div className="fav-icon position-absolute start-0 top-0 text-success fs-4 p-2">
+  <i className="fa-solid fa-heart"></i>
+</div>
+}
+
 
         {/* Recipe Image */}
         <figure className="text-center mb-4 w-50 mx-auto rounded-circle overflow-hidden">
@@ -95,7 +151,24 @@ export default function RecipeDetails({handleHideRecipeDetailsView, currentRecip
             <small className="text-muted">Price</small>
           </div>
         </div>
+
+
+        {/*  favourite btn */}
+      {!isAdmine &&   <div className="fav-btn text-center">
+        <button className="btn btn-success" disabled={isLoading} onClick={()=>{
+if(isFav){
+toast(`${currentRecipe.name} is Already in Your Favourite List`)
+}else{
+  handleAddRecipeToFavourites(currentRecipe.id)
+}
+
+        }}>{isLoading ? <i className="fa-solid fa-spinner fa-spin"></i>:"Add To Favourites"}</button>
+      </div>}
+
+
+
       </section>
+      
     </div>
   );
 }

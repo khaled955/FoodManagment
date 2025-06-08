@@ -17,7 +17,7 @@ a{
 
 
 
-.fa-xmark ,.fa-bars{
+.fa-xmark ,.fa-bars ,.fa-heart.fav-remove{
     cursor: pointer;
 }
 
@@ -106,6 +106,9 @@ outline: 0;
     right: -30px;
 }
 
+.img-circle{
+    opacity: .001;
+}
 
 /*  SideBar style */
 
@@ -222,7 +225,7 @@ input[type="file"]{
 }
 
 
-.label-file{
+.label-file , .fa-square-xmark , .fa-eye{
     cursor: pointer;
 }
 
@@ -237,7 +240,7 @@ input[type="file"]{
 }
 
 
-.recipe-details-container{
+.recipe-details-container ,.user-details-box{
     z-index: 99999999999999999;
 background-color:rgba(0, 0, 0, 0.5);
 
@@ -247,4 +250,21 @@ background-color:rgba(0, 0, 0, 0.5);
 
 .online-alert{
     z-index: 9999999999999999999999999999999;
+}
+
+
+.outlet-collapse{
+    width: calc(100% - 250px);
+    margin-left: auto;
+}
+
+
+.user-home{
+    background-color: #F0FFEF;
+}
+
+
+
+.default-btn{
+    min-width: 200px;
 }

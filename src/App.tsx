@@ -9,7 +9,6 @@ import VerifyEmail from './Modules/Authintication/Componenets/VerifyEmail/Verify
 import ForgetPassword from './Modules/Authintication/Componenets/ForgetPassword/ForgetPassword';
 import NotFound from './Modules/Shared/Components/NotFound/NotFound';
 import MasterLayout from './Modules/Shared/Components/MasterLayout/MasterLayout';
-import Dashboard from './Modules/Dashboard/Components/Dashboard';
 import RecipesList from './Modules/Recipes/Components/RecipesList/RecipesList';
 import RecipeData from './Modules/Recipes/Components/RecipeData/RecipeData';
 import CategoriesList from './Modules/Categories/Components/CategoriesList/CategoriesList';
@@ -23,6 +22,8 @@ import AdminActionsProvider from './Context/AdminActions.context';
 import { useState } from 'react';
 import { FoodItem } from './interfaces/interfaces';
 import useOnline from './Hooks/useOnline';
+import { HelmetProvider } from 'react-helmet-async';
+import Dashboard from './Modules/Dashboard/Components/Dashboard/Dashboard';
 
 
 function App() {
@@ -59,10 +60,10 @@ const routes = createBrowserRouter([{path:"/" ,element: <GuestRoute><AuthLayout/
   {index:true , element:<Dashboard/>},
   {path:"recipes", element:<RecipesList handleSetRecipeUpdateAction={handleSetRecipeUpdateAction} handleSetRecipeAddAction={handleSetRecipeAddAction}/>},
   {path:"recipe-data" , element:<RecipeData/>},
-  {path:"categories" , element:<CategoriesList/>},
-  {path:"users" , element:<UsersList/>},
+  {path:"categories" , element: <CategoriesList/>},
+  {path:"users" , element: <UsersList/>},
   {path:"favs" , element:<FavouritesList/>},
-  {path:"change-pass" , element:<ChangePassword/>},
+  {path:"change-password" , element:<ChangePassword/>},
   {path:"*" , element:<NotFound/>},
 
 ]}
@@ -76,13 +77,15 @@ const routes = createBrowserRouter([{path:"/" ,element: <GuestRoute><AuthLayout/
   return (
     <>
     {!isOnline && <p className='position-fixed top-0 start-50 translate-middle-x text-white fw-bold bg-danger online-alert p-2'> Please Check Internet Connection  <i className="fa-solid fa-wifi"></i></p>}
-    <UserAuthContext>
+   <HelmetProvider>
+     <UserAuthContext>
       <AdminActionsProvider>
       <RouterProvider router={routes}></RouterProvider>
       </AdminActionsProvider>
 
     </UserAuthContext>
     
+   </HelmetProvider>
      <Toaster/>
     </>
   )

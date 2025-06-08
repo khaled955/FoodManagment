@@ -1,10 +1,8 @@
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import { jwtDecode } from "jwt-decode";
 import { UserAuthTokenPayload } from '../../../../interfaces/interfaces';
 import { useContext } from 'react';
 import { UserToken } from '../../../../Context/UserAuth.context';
-
+import photo from "../../../../assets/imags/sidebarlogo.png"
 
 
 
@@ -39,15 +37,13 @@ function getUserDecoded(){
       </div>
       <div className="serach-input w-50 rounded-2 overflow-hidden ms-auto position-relative">
         <i className="fa-solid fa-magnifying-glass position-absolute top-50 text-black translate-middle-y"></i>
-        <input className='w-100 border-0 px-5' type="search" name="search" id="search" placeholder='Search here' />
+        <input disabled className='w-100 border-0 px-5' type="search" name="search" id="search" placeholder='Search here' />
       </div>
       <div className='d-flex gap-2 align-items-center nav-header'>
         <h2 className=' h6'>{getUserDecoded()}</h2>
-        <div className="profile-setting">
- <DropdownButton id="dropdown-basic-button" title="Upskilling">
-      <Dropdown.Item >Profile</Dropdown.Item>
-  
-    </DropdownButton>
+        <div className="profile-setting d-flex justify-content-center align-items-center">
+ <img className="w-25" src={photo} alt="" />
+ <h3 className='h6 text-info'>UpSkilling</h3>
       </div>
       </div>
     </nav>

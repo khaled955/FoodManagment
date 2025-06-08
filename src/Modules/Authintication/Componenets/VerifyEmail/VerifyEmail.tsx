@@ -5,7 +5,7 @@ import { DevTool } from "@hookform/devtools";
 import toast from "react-hot-toast";
 import axios, { isAxiosError } from "axios";
 import logo from "../../../../assets/imags/logo.png"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./VerifyEmail.module.css"
 import { AUTHENTICATIONS_URLS } from "../../../../Api/Url";
 
@@ -30,8 +30,7 @@ type formData = {
 export default function VerifyEmail() {
 const [errorMessage , setErrorMessage] = useState<null | string>(null)
 const navigate = useNavigate()
-
-
+const location = useLocation()
 
 // useForm hook for form validation
 
@@ -40,8 +39,8 @@ const navigate = useNavigate()
     handleSubmit,
     control,
    
-    formState: { errors },
-  } = useForm<formData>({mode:"onChange"})
+    formState: { errors,isSubmitting },
+  } = useForm<formData>({mode:"onChange",defaultValues:{email:location.state.email}})
 
 
  async function handleRegisterUser(userInfo:formData){
@@ -180,8 +179,8 @@ if(isAxiosError(error)){
       )}
 
       {/* Submit Button */}
-      <button className="auth-btn mt-4" type="submit" aria-label="Submit verification form">
-        Send
+      <button className="auth-btn mt-4" type="submit" aria-label="Submit verification form" disabled={isSubmitting}>
+        {isSubmitting ? <i className="fa-solid fa-spinner fa-spin"></i>:"Send"}
       </button>
     </form>
 

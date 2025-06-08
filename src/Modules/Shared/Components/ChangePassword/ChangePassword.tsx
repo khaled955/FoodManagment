@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import toast from "react-hot-toast";
@@ -27,11 +27,11 @@ export default function ChangePassword() {
     handleSubmit,
     control,
     watch,
-    formState: { errors },
+    trigger,
+    formState: { errors,isSubmitting },
   } = useForm<formData>({ mode: "onChange" });
 
-  const newPassword = watch("newPassword");
-  const oldPassword = watch("oldPassword");
+ 
 
   async function handleRegisterUser(userInfo: formData) {
     const toastId = toast.loading("Waiting....");
@@ -58,6 +58,34 @@ export default function ChangePassword() {
     }
   }
 
+
+
+
+// check identical of new password and confirmed password
+
+useEffect(()=>{
+const subscription = watch((_,{name})=>{
+
+if(name === "newPassword"){
+  trigger("confirmNewPassword")
+}
+
+})
+
+return ()=>{
+  subscription.unsubscribe()
+}
+
+},[trigger,watch])
+
+
+
+
+
+
+
+
+
   return (
     <section
       aria-labelledby="change-password-heading"
@@ -77,7 +105,6 @@ export default function ChangePassword() {
 
               {/* Old Password */}
               <div className="mb-3 position-relative">
-                <label htmlFor="oldPassword" className="form-label">Old Password</label>
                 <div className="d-flex gap-1 align-items-center position-relative">
                   <div className="register-icons d-flex justify-content-center align-items-center">
                     <i className="fa-solid fa-lock"></i>
@@ -113,7 +140,6 @@ export default function ChangePassword() {
 
               {/* New Password */}
               <div className="mb-3 position-relative">
-                <label htmlFor="newPassword" className="form-label">New Password</label>
                 <div className="d-flex gap-1 align-items-center position-relative">
                   <div className="register-icons d-flex justify-content-center align-items-center">
                     <i className="fa-solid fa-lock"></i>
@@ -137,7 +163,7 @@ export default function ChangePassword() {
                         message: "Must include upper/lowercase, number, and special character",
                       },
                       validate: (value) =>
-                        value !== oldPassword || "New Password must differ from Old Password",
+                        value !== watch("oldPassword") || "New Password must differ from Old Password",
                     })}
                     autoComplete="new-password"
                   />
@@ -151,7 +177,6 @@ export default function ChangePassword() {
 
               {/* Confirm Password */}
               <div className="mb-3 position-relative">
-                <label htmlFor="confirmNewPassword" className="form-label">Confirm New Password</label>
                 <div className="d-flex gap-1 align-items-center position-relative">
                   <div className="register-icons d-flex justify-content-center align-items-center">
                     <i className="fa-solid fa-lock"></i>
@@ -171,7 +196,7 @@ export default function ChangePassword() {
                     {...register("confirmNewPassword", {
                       required: "Confirmed Password Is Required",
                       validate: (value) =>
-                        value === newPassword || "Passwords Do Not Match",
+                        value === watch("newPassword") || "Passwords Do Not Match",
                     })}
                     onPaste={(e) => e.preventDefault()}
                     autoComplete="new-password"
@@ -192,7 +217,7 @@ export default function ChangePassword() {
             </p>
           )}
 
-          <button className="auth-btn register-btn" type="submit">Change Password</button>
+          <button className="auth-btn register-btn" type="submit" disabled={isSubmitting}>{isSubmitting ?<i className="fa-solid fa-spinner fa-spin"></i> :"Change Password"}</button>
         </form>
         <DevTool control={control} />
       </div>

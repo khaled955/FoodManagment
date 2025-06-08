@@ -4,6 +4,7 @@ export const baseURL = `https://upskilling-egypt.com:3006`;
 
 
 /***************** Authentications_urls *******************************/
+//   'https://upskilling-egypt.com:3006/api/v1/Users/?userName=ali&groups=1&pageSize=10&pageNumber=6' \
 
 export const AUTHENTICATIONS_URLS = {
     LOGIN:`${baseURL}/api/v1/Users/Login`,
@@ -13,7 +14,7 @@ export const AUTHENTICATIONS_URLS = {
     GET_USER_BY_ID:(id:number)=>`${baseURL}/api/v1/Users/${id}`,
     VERIFY_USER_ACCOUNT:`${baseURL}/api/v1/Users/verify`,
     GET_CURRENT_USER:`${baseURL}/api/v1/Users/currentUser`,
-    GET_LOGED_USER:`${baseURL}/api/v1/Users/`,
+    GET_LOGED_USER: (pageSize:number,pageNumber:number,userName:string="",groups:string="")=> `${baseURL}/api/v1/Users/?userName=${userName}${groups?`&groups=${groups}`:""}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
     UPDATE_USER_PROFILE:`${baseURL}/api/v1/Users/`,
     FORGET_PASSWORD:`${baseURL}/api/v1/Users/Reset/Request`,
     RESET_PASSWORD:`${baseURL}/api/v1/Users/Reset`,
@@ -28,7 +29,7 @@ export const AUTHENTICATIONS_URLS = {
 
 
 export const CATEGORIES_URL = {
-    GET_ALL_CATEGORIES:(pageSize:number,pageNumber:number)=> `${baseURL}/api/v1/Category/?${pageSize}=10&${pageNumber}=1`,
+    GET_ALL_CATEGORIES:(pageSize:number,pageNumber:number,name:string="")=> `${baseURL}/api/v1/Category/?name=${name}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
     GET_CATEGORY_BY_ID:(id:number)=>`${baseURL}/api/v1/Category/${id}`,
     CREATE_CATEGORY: `${baseURL}/api/v1/Category/`,
     UPDATE_CATEGORY_BY_ID:(id:number)=>`${baseURL}/api/v1/Category/${id}`,
@@ -41,7 +42,7 @@ export const CATEGORIES_URL = {
 /***************** Recipes-URLS *******************************/
 
 export const RECIPES_URLS = {
-    GET_ALL_RECIPES:(pageSize:number,pageNumber:number)=> `${baseURL}/api/v1/Recipe/?${pageSize}=10&${pageNumber}=1`,
+    GET_ALL_RECIPES:(pageSize:number,pageNumber:number,name:string="",tagId:string="",categoryId:string="")=> `${baseURL}/api/v1/Recipe/?name=${name}&tagId=${tagId}&categoryId=${categoryId}&pageSize=${pageSize}&pageNumber=${pageNumber}`,
     GET_RECIPES_BY_ID:(id:number)=>`${baseURL}/api/v1/Recipe/${id}`,
     CREATE_RECIPE: `${baseURL}/api/v1/Recipe/`,
    UPDATE_RECIPES_BY_ID:(id:number)=>`${baseURL}/api/v1/Recipe/${id}`,
@@ -60,11 +61,10 @@ export const RECIPES_URLS = {
 
 
 /****************** USER_RECIPE **************************************/
-
-export const USER_RECIPE_URLS = {
-GET_USER_RECIPES : `${baseURL}/api/v1/userRecipe/`,
-CREATE_USER_RECIPE : `${baseURL}/api/v1/userRecipe/`,
-DELET_USER_RECIPE_BT_ID:(id:number)=>`${baseURL}/api/v1/userRecipe/${id}`
+export const USER_FAV_URLS = {
+GET_FAV_RECIPES :`${baseURL}/api/v1/userRecipe/`,
+CREATE_FAV_RECIPE : `${baseURL}/api/v1/userRecipe/`,
+DELET_FAV_RECIPE_BT_ID:(id:number)=>`${baseURL}/api/v1/userRecipe/${id}`
 
 
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useCallback, useState } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { AdminActionsContextType, Category } from "../interfaces/interfaces";
 import { isAxiosError } from "axios";
@@ -13,7 +13,7 @@ const getURL = "/api/v1/Category/?pageSize=10&pageNumber=1"
 export default function AdminActionsProvider({children}:{children:ReactNode}){
 
     const [categoryList , setCategoryList] = useState<Category[] | null>(null)!;
-    
+    const [isLoading , setIsLoading] = useState(false);
 
    type formData = {
   name?:string
@@ -23,35 +23,33 @@ export default function AdminActionsProvider({children}:{children:ReactNode}){
 //  Get Data To Display
 
 
-     async function handleGetDataByAdmin(url:string):Promise<any>{
 
-try {
-    const options = {
-        url,
-        method:"GET",
-    }
 
-    const {data} = await axiosInstance.request(options)
-    setCategoryList(data.data)
-    
-} catch (error) {
-    
-console.log(error)
 
-}
+const handleGetDataByAdmin = useCallback(async (url: string) => {
+  try {
+    const { data } = await axiosInstance.get(url);
+    setCategoryList(data.data);
+    return data
+  } catch (err) {
+    console.error(err);
+  }
+}, [setCategoryList]);
 
 
 
 
 
-    }
-    
 
 
 // Add Data
  async function handleAddDataByAdmin( catData:formData,addUrl:string, msg:string):Promise<any>{
+
+
+               setIsLoading(true)
   const toastId = toast.loading("Waiting")
 try {
+    
     const options = {
         url:addUrl,
         method:"POST",
@@ -59,8 +57,8 @@ try {
         
     }
 
-    const {data} = await axiosInstance.request(options)
-    console.log(data)
+     await axiosInstance.request(options)
+    
     toast.success(msg)
     await handleGetDataByAdmin(getURL)
 
@@ -68,10 +66,13 @@ try {
 } catch (error) {
     if(isAxiosError(error)){
         toast.error(error.response?.data.message)
+       
     }
 
 
 }finally{
+
+            setIsLoading(false)
         toast.dismiss(toastId)
     }
 
@@ -85,7 +86,7 @@ try {
 
 // update data By Admin
  async function handleUpdateDataByAdmin(catData:formData,updateUrl:string, msg:string, id:number):Promise<any>{
-
+    setIsLoading(true)
   const toastId = toast.loading("Waiting")
 try {
     const options = {
@@ -95,19 +96,18 @@ try {
         
     }
 
-    const {data} = await axiosInstance.request(options)
-    console.log(data)
+     await axiosInstance.request(options)
     toast.success(msg)
      await handleGetDataByAdmin(getURL)
     
 } catch (error) {
     if(isAxiosError(error)){
-        console.log(error)
         toast.error(error.response?.data.message)
     }
 
 
 }finally{
+    setIsLoading(false)
         toast.dismiss(toastId)
     }
 
@@ -125,6 +125,7 @@ try {
 // Delet Specific category
  async function handleDeleteDataByAdmin(deletUrl:string, msg:string, id:number):Promise<any>{
 
+    setIsLoading(true)
   const toastId = toast.loading("Waiting")
 try {
     const options = {
@@ -134,20 +135,19 @@ try {
         
     }
 
-    const {data} = await axiosInstance.request(options)
-    console.log(data)
+    await axiosInstance.request(options)
     toast.success(msg)
      await handleGetDataByAdmin(getURL)
     
 } catch (error) {
     if(isAxiosError(error)){
-        console.log(error)
         toast.error(error.response?.data.message)
     }
 
 
 }finally{
         toast.dismiss(toastId)
+        setIsLoading(false)
     }
 
 
@@ -190,7 +190,7 @@ function handleReverseCategoriesByName(){
 
 
 
-    return <AdminActions.Provider value={{handleGetDataByAdmin ,handleAddDataByAdmin ,handleUpdateDataByAdmin,categoryList,handleDeleteDataByAdmin,handleSortCategoriesByName,handleReverseCategoriesByName}}>
+    return <AdminActions.Provider value={{handleGetDataByAdmin ,handleAddDataByAdmin ,handleUpdateDataByAdmin,categoryList,handleDeleteDataByAdmin,handleSortCategoriesByName,handleReverseCategoriesByName,isLoading}}>
 
 {children}
     </AdminActions.Provider>
