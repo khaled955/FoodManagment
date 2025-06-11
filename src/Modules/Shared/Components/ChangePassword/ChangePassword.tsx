@@ -17,6 +17,7 @@ type formData = {
 };
 
 export default function ChangePassword() {
+  const [showOldPass,setShowOldPass] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmedPassword, setShowConfirmedPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
@@ -110,16 +111,16 @@ return ()=>{
                     <i className="fa-solid fa-lock"></i>
                   </div>
                   <i
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    onClick={() => setShowOldPass(!showOldPass)}
+                    className={`fa-solid ${showOldPass ? "fa-eye" : "fa-eye-slash"} position-absolute end-0 me-3 eye-pointer`}
+                    aria-label={showOldPass ? "Hide password" : "Show password"}
                     role="button"
                     tabIndex={0}
                   />
                   <input
                     id="oldPassword"
                     className="form-control rounded-0"
-                    type={showPassword ? "text" : "password"}
+                    type={showOldPass ? "text" : "password"}
                     placeholder="Old Password"
                     {...register("oldPassword", {
                       required: "Old Password Is Required",
